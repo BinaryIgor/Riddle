@@ -5,7 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.HttpStatus;
 
-import com.iprogrammerr.riddle.model.User;
+import com.iprogrammerr.riddle.entity.User;
+import com.iprogrammerr.riddle.exception.NotResolvedRouteException;
 import com.iprogrammerr.riddle.service.JsonService;
 
 public class UserRoute extends Route {
@@ -22,7 +23,7 @@ public class UserRoute extends Route {
 
     @Override
     public void resolveGetRequest(String path, HttpServletRequest request, HttpServletResponse response) {
-	// TODO Auto-generated method stub
+	throw new NotResolvedRouteException();
     }
 
     @Override
@@ -37,14 +38,12 @@ public class UserRoute extends Route {
 
     @Override
     public void resolvePutRequest(String path, HttpServletRequest request, HttpServletResponse response) {
-	// TODO Auto-generated method stub
-
+	throw new NotResolvedRouteException();
     }
 
     @Override
     public void resolveDeleteRequest(String path, HttpServletRequest request, HttpServletResponse response) {
-	// TODO Auto-generated method stub
-
+	throw new NotResolvedRouteException();
     }
 
 }
