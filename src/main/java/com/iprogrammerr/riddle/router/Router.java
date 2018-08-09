@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.NoResultException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.HttpStatus;
 
+import com.iprogrammerr.riddle.exception.InvalidItemException;
 import com.iprogrammerr.riddle.exception.NotResolvedRouteException;
 import com.iprogrammerr.riddle.exception.NotSupportedMethodException;
 import com.iprogrammerr.riddle.exception.WrongRequestBodyException;
@@ -37,16 +39,20 @@ public class Router extends HttpServlet {
 	try {
 	    RouteWithPath route = resolveRoute(request, response);
 	    resolveRequest(request, response, route);
-	    setResponse(response);
 	} catch (NotResolvedRouteException exception) {
 	    exception.printStackTrace();
-	    response.setStatus(HttpStatus.NOT_FOUND_404);
-	} catch (WrongRequestBodyException exception) {
+	    response.sendError(HttpStatus.NOT_FOUND_404, exception.getMessage());
+	} catch (WrongRequestBodyException | InvalidItemException exception) {
 	    exception.printStackTrace();
-	    response.setStatus(HttpStatus.UNPROCESSABLE_ENTITY_422);
+	    response.sendError(HttpStatus.UNPROCESSABLE_ENTITY_422, exception.getMessage());
 	} catch (NotSupportedMethodException exception) {
 	    exception.printStackTrace();
-	    response.setStatus(HttpStatus.BAD_REQUEST_400);
+	    response.sendError(HttpStatus.BAD_REQUEST_400, exception.getMessage());
+	} catch (NoResultException exception) {
+	    exception.printStackTrace();
+	    response.setStatus(HttpStatus.NO_CONTENT_204);
+	} finally {
+	    setResponse(response);
 	}
     }
 

@@ -9,7 +9,7 @@ import org.hibernate.query.Query;
 public class Dao<Entity> {
 
     private Class<Entity> clazz;
-    private SessionFactory sessionFactory;
+    protected SessionFactory sessionFactory;
 
     public Dao(Class<Entity> clazz, SessionFactory sessionFactory) {
 	this.clazz = clazz;
@@ -17,23 +17,48 @@ public class Dao<Entity> {
     }
 
     public long create(Entity entity) {
-	Session session = sessionFactory.getCurrentSession();
-	return (long) session.save(entity);
+	Session session = sessionFactory.openSession();
+	try {
+	    return (long) session.save(entity);
+	} catch (Exception exception) {
+	    throw exception;
+	} finally {
+	    session.close();
+	}
     }
 
     public void update(Entity entity) {
-	Session session = sessionFactory.getCurrentSession();
-	session.update(entity);
+	Session session = sessionFactory.openSession();
+	try {
+	    session.update(entity);
+	} catch (Exception exception) {
+	    throw exception;
+	} finally {
+	    session.close();
+	}
     }
 
     public void delete(Entity entity) {
-	Session session = sessionFactory.getCurrentSession();
-	session.delete(entity);
+	Session session = sessionFactory.openSession();
+	try {
+	    session.delete(entity);
+	} catch (Exception exception) {
+	    throw exception;
+	} finally {
+	    session.close();
+	}
     }
 
     public Entity get(long id) {
-	Session session = sessionFactory.getCurrentSession();
-	return session.get(clazz, id);
+	Session session = sessionFactory.openSession();
+	try {
+	    return session.get(clazz, id);
+	} catch (Exception exception) {
+	    exception.printStackTrace();
+	    throw exception;
+	} finally {
+	    session.close();
+	}
     }
 
     public List<Entity> get() {
@@ -41,9 +66,16 @@ public class Dao<Entity> {
     }
 
     public List<Entity> get(String toSortFieldName) {
-	Session session = sessionFactory.getCurrentSession();
-	String queryString = "from " + clazz.getName() + " order by " + toSortFieldName;
-	Query<Entity> query = session.createQuery(queryString, clazz);
-	return query.getResultList();
+	Session session = sessionFactory.openSession();
+	try {
+	    String queryString = "from " + clazz.getName() + " order by " + toSortFieldName;
+	    Query<Entity> query = session.createQuery(queryString, clazz);
+	    return query.getResultList();
+	} catch (Exception exception) {
+	    throw exception;
+	} finally {
+	    session.close();
+	}
     }
+
 }

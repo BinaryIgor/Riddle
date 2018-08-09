@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.iprogrammerr.riddle.exception.WrongRequestBodyException;
-import com.iprogrammerr.riddle.service.JsonService;
+import com.iprogrammerr.riddle.service.json.JsonService;
 
 public abstract class Route {
 

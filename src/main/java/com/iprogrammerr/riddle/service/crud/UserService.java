@@ -1,12 +1,21 @@
 package com.iprogrammerr.riddle.service.crud;
 
-import com.iprogrammerr.riddle.dao.Dao;
+import com.iprogrammerr.riddle.dao.UserDao;
 import com.iprogrammerr.riddle.entity.User;
 
 public class UserService extends CrudService<User> {
 
-    public UserService(Dao<User> dao) {
-	super(dao);
+    public UserService(UserDao userDao) {
+	super(userDao);
+    }
+
+    public User getUserByNameOrEmail(String nameOrEmail) {
+	UserDao userDao = (UserDao) dao;
+	if (nameOrEmail.contains("@")) {
+	    return userDao.getUserByEmail(nameOrEmail);
+	} else {
+	    return userDao.getUserByName(nameOrEmail);
+	}
     }
 
 }

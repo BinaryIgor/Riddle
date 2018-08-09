@@ -2,14 +2,11 @@ package com.iprogrammerr.riddle.service.crud;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import com.iprogrammerr.riddle.dao.Dao;
 
-@Transactional(rollbackOn = Exception.class)
 public abstract class CrudService<Entity> {
 
-    private Dao<Entity> dao;
+    protected Dao<Entity> dao;
 
     public CrudService(Dao<Entity> dao) {
 	this.dao = dao;

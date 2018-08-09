@@ -1,4 +1,4 @@
-package com.iprogrammerr.riddle.service;
+package com.iprogrammerr.riddle.service.json;
 
 import java.io.IOException;
 import java.io.InputStream;
