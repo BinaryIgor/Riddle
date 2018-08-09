@@ -37,7 +37,6 @@ public class UserRoute extends Route {
 	    signUp(user);
 	}
 	response.setStatus(HttpStatus.CREATED_201);
-
     }
 
     @Override

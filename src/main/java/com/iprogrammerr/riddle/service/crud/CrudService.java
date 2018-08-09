@@ -6,7 +6,7 @@ import javax.transaction.Transactional;
 
 import com.iprogrammerr.riddle.dao.Dao;
 
-@Transactional
+@Transactional(rollbackOn = Exception.class)
 public abstract class CrudService<Entity> {
 
     private Dao<Entity> dao;

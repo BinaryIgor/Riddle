@@ -6,6 +6,7 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.hibernate.SessionFactory;
 
 import com.iprogrammerr.riddle.router.Route;
 import com.iprogrammerr.riddle.router.Router;
@@ -14,9 +15,15 @@ public class JettyServer {
 
     private final Server server = new Server();
     private int port;
+    private SessionFactory sessionFactory;
 
     public JettyServer(int port) {
 	this.port = port;
+    }
+
+    public JettyServer(int port, SessionFactory sessionFactory) {
+	this.port = port;
+	this.sessionFactory = sessionFactory;
     }
 
     public void start(String contextPath, List<Route> routes) throws Exception {
@@ -32,6 +39,9 @@ public class JettyServer {
     }
 
     public void stop() throws Exception {
+	if (sessionFactory != null) {
+	    sessionFactory.close();
+	}
 	server.stop();
     }
 }

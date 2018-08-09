@@ -29,7 +29,7 @@ public class RiddleApplication {
 
 	routes.add(new UserRoute(userService, jsonService));
 
-	JettyServer server = new JettyServer(SERVER_PORT);
+	JettyServer server = new JettyServer(SERVER_PORT, factory);
 	server.start("riddle", routes);
     }
 
