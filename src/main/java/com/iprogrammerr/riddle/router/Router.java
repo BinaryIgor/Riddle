@@ -15,6 +15,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import com.iprogrammerr.riddle.exception.InvalidItemException;
 import com.iprogrammerr.riddle.exception.NotResolvedRouteException;
 import com.iprogrammerr.riddle.exception.NotSupportedMethodException;
+import com.iprogrammerr.riddle.exception.RequestParameterException;
 import com.iprogrammerr.riddle.exception.UnauthenticatedException;
 import com.iprogrammerr.riddle.exception.UnauthorizedException;
 import com.iprogrammerr.riddle.exception.WrongRequestBodyException;
@@ -58,7 +59,7 @@ public class Router extends HttpServlet {
 	    response.sendError(HttpStatus.NOT_FOUND_404, exception.getMessage());
 	} else if (exception instanceof WrongRequestBodyException || exception instanceof InvalidItemException) {
 	    response.sendError(HttpStatus.UNPROCESSABLE_ENTITY_422, exception.getMessage());
-	} else if (exception instanceof NotSupportedMethodException) {
+	} else if (exception instanceof NotSupportedMethodException || exception instanceof RequestParameterException) {
 	    response.sendError(HttpStatus.BAD_REQUEST_400, exception.getMessage());
 	} else if (exception instanceof NoResultException) {
 	    response.setStatus(HttpStatus.NO_CONTENT_204);

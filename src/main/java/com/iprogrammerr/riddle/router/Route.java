@@ -8,8 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.iprogrammerr.riddle.exception.JsonParsingException;
+import com.iprogrammerr.riddle.exception.RequestParameterException;
 import com.iprogrammerr.riddle.exception.WrongRequestBodyException;
 import com.iprogrammerr.riddle.service.json.JsonService;
+import com.iprogrammerr.riddle.util.StringUtil;
 
 public abstract class Route {
 
@@ -50,6 +52,19 @@ public abstract class Route {
 	} catch (IOException exception) {
 	    exception.printStackTrace();
 	    throw new JsonParsingException(exception);
+	}
+    }
+
+    protected <T> T getParameter(Class<T> clazz, String parameterKey, HttpServletRequest request) {
+	try {
+	    String parameterValue = request.getParameter(parameterKey);
+	    if (StringUtil.isNullOrEmpty(parameterValue)) {
+		throw new RequestParameterException(parameterKey + " is required.");
+	    }
+	    return clazz.cast(parameterValue);
+	} catch (ClassCastException exception) {
+	    exception.printStackTrace();
+	    throw new RequestParameterException(parameterKey + " is invalid");
 	}
     }
 

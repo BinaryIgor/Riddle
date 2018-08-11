@@ -62,6 +62,11 @@ public class UserRole {
 	return true;
     }
 
+    @Override
+    public String toString() {
+	return "UserRole [id=" + id + ", name=" + name + "]";
+    }
+
     public enum Role {
 
 	PLAYER("player"), ADMIN("admin");

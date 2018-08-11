@@ -32,6 +32,8 @@ public class User {
     @Column(name = "image_path")
     private String imagePath;
 
+    private boolean active;
+
     @OneToOne
     @JoinColumn(name = "user_role_id")
     private UserRole userRole;
@@ -76,8 +78,20 @@ public class User {
 	this.imagePath = imagePath;
     }
 
+    public boolean isActive() {
+	return active;
+    }
+
+    public void setActive(boolean active) {
+	this.active = active;
+    }
+
     public UserRole getUserRole() {
 	return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+	this.userRole = userRole;
     }
 
     @Override
@@ -130,6 +144,12 @@ public class User {
 	} else if (!userRole.equals(other.userRole))
 	    return false;
 	return true;
+    }
+
+    @Override
+    public String toString() {
+	return "User [id=" + id + ", email=" + email + ", name=" + name + ", password=" + password + ", imagePath="
+		+ imagePath + ", userRole=" + userRole + "]";
     }
 
 }
