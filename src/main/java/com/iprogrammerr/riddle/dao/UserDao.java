@@ -34,6 +34,8 @@ public class UserDao extends Dao<User> {
 	    return query.getSingleResult();
 	} catch (Exception exception) {
 	    throw exception;
+	} finally {
+	    session.close();
 	}
     }
 }

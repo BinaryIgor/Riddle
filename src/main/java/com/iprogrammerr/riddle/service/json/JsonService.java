@@ -13,4 +13,8 @@ public class JsonService {
 	T object = objectMapper.readValue(inputStream, clazz);
 	return object;
     }
+
+    public <T> String serialize(T object) throws IOException {
+	return objectMapper.writeValueAsString(object);
+    }
 }

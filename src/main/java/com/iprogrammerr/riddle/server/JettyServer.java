@@ -10,6 +10,7 @@ import org.hibernate.SessionFactory;
 
 import com.iprogrammerr.riddle.router.Route;
 import com.iprogrammerr.riddle.router.Router;
+import com.iprogrammerr.riddle.service.security.SecurityService;
 
 public class JettyServer {
 
@@ -26,14 +27,14 @@ public class JettyServer {
 	this.sessionFactory = sessionFactory;
     }
 
-    public void start(String contextPath, List<Route> routes) throws Exception {
+    public void start(String contextPath, List<Route> routes, SecurityService securityService) throws Exception {
 	ServerConnector connector = new ServerConnector(server);
 	connector.setPort(port);
 	server.setConnectors(new Connector[] { connector });
 	ServletContextHandler contextHandler = new ServletContextHandler();
 	contextHandler.setContextPath("/" + contextPath + "/");
 	Router router = (Router) contextHandler.addServlet(Router.class, "/*").getServlet();
-	router.init(contextPath, routes);
+	router.init(contextPath, routes, securityService);
 	server.setHandler(contextHandler);
 	server.start();
     }

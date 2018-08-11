@@ -76,6 +76,10 @@ public class User {
 	this.imagePath = imagePath;
     }
 
+    public UserRole getUserRole() {
+	return userRole;
+    }
+
     @Override
     public int hashCode() {
 	final int prime = 31;

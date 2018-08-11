@@ -16,12 +16,13 @@ import com.iprogrammerr.riddle.router.UserRoute;
 import com.iprogrammerr.riddle.server.JettyServer;
 import com.iprogrammerr.riddle.service.crud.UserService;
 import com.iprogrammerr.riddle.service.json.JsonService;
-import com.iprogrammerr.riddle.service.token.TokenService;
+import com.iprogrammerr.riddle.service.security.SecurityService;
 import com.iprogrammerr.riddle.service.validation.ValidationService;
 
 public class RiddleApplication {
 
-    private final static int SERVER_PORT = 8080;
+    private static final int SERVER_PORT = 8080;
+    public static final String CONTEXT_PATH = "riddle";
 
     public static void main(String[] args) throws Exception {
 	SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class)
@@ -34,12 +35,12 @@ public class RiddleApplication {
 	ValidationService validationService = new ValidationService(
 		Validation.buildDefaultValidatorFactory().getValidator());
 	JsonService jsonService = new JsonService();
-	TokenService tokenService = new TokenService(userService);
+	SecurityService securityService = new SecurityService(userService);
 
-	routes.add(new UserRoute(userService, validationService, tokenService, jsonService));
+	routes.add(new UserRoute(userService, validationService, securityService, jsonService));
 
 	JettyServer server = new JettyServer(SERVER_PORT, factory);
-	server.start("riddle", routes);
+	server.start(CONTEXT_PATH, routes, securityService);
     }
 
 }

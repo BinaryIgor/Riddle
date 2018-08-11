@@ -1,9 +1,18 @@
 package com.iprogrammerr.riddle.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Token {
 
     private String value;
     private long expirationDate;
+
+    @JsonCreator
+    public Token(@JsonProperty("value") String value, @JsonProperty("expirationDate") long expirationDate) {
+	this.value = value;
+	this.expirationDate = expirationDate;
+    }
 
     public String getValue() {
 	return value;
@@ -12,31 +21,4 @@ public class Token {
     public long getExpirationDate() {
 	return expirationDate;
     }
-
-    public void setValue(String value) {
-	this.value = value;
-    }
-
-    public void setExpirationDate(long expirationDate) {
-	this.expirationDate = expirationDate;
-    }
-
-    public enum TokenType {
-	ACCESS_TOKEN("accessToken"), REFRESH_TOKEN("refreshToken");
-
-	private String value;
-
-	TokenType(String value) {
-	    this.value = value;
-	}
-
-	public String getValue() {
-	    return value;
-	}
-
-	public static boolean isAccessToken(String tokenType) {
-	    return ACCESS_TOKEN.value.equals(tokenType);
-	}
-    }
-
 }

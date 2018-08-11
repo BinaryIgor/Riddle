@@ -9,6 +9,14 @@ public class UserService extends CrudService<User> {
 	super(userDao);
     }
 
+    public User getUserByName(String name) {
+	return ((UserDao) dao).getUserByName(name);
+    }
+
+    public User getUserByEmail(String email) {
+	return ((UserDao) dao).getUserByEmail(email);
+    }
+
     public User getUserByNameOrEmail(String nameOrEmail) {
 	UserDao userDao = (UserDao) dao;
 	if (nameOrEmail.contains("@")) {

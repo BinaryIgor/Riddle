@@ -15,8 +15,11 @@ import org.eclipse.jetty.http.HttpStatus;
 import com.iprogrammerr.riddle.exception.InvalidItemException;
 import com.iprogrammerr.riddle.exception.NotResolvedRouteException;
 import com.iprogrammerr.riddle.exception.NotSupportedMethodException;
+import com.iprogrammerr.riddle.exception.UnauthenticatedException;
+import com.iprogrammerr.riddle.exception.UnauthorizedException;
 import com.iprogrammerr.riddle.exception.WrongRequestBodyException;
 import com.iprogrammerr.riddle.model.RouteWithPath;
+import com.iprogrammerr.riddle.service.security.SecurityService;
 
 public class Router extends HttpServlet {
 
@@ -26,10 +29,12 @@ public class Router extends HttpServlet {
     private static final String PUT = "PUT";
     private static final String DELETE = "DELETE";
     private final List<Route> routes = new ArrayList<>();
+    private SecurityService securityService;
 
-    public void init(String contextPath, List<Route> routes) {
+    public void init(String contextPath, List<Route> routes, SecurityService securityService) {
 	this.contextPath = contextPath;
 	this.routes.addAll(routes);
+	this.securityService = securityService;
     }
 
     // TODO filtering, headers?
@@ -37,28 +42,35 @@ public class Router extends HttpServlet {
     protected void service(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
 	try {
-	    RouteWithPath route = resolveRoute(request, response);
+	    securityService.check(request);
+	    RouteWithPath route = resolveRoute(request.getRequestURI(), response);
 	    resolveRequest(request, response, route);
-	} catch (NotResolvedRouteException exception) {
-	    exception.printStackTrace();
-	    response.sendError(HttpStatus.NOT_FOUND_404, exception.getMessage());
-	} catch (WrongRequestBodyException | InvalidItemException exception) {
-	    exception.printStackTrace();
-	    response.sendError(HttpStatus.UNPROCESSABLE_ENTITY_422, exception.getMessage());
-	} catch (NotSupportedMethodException exception) {
-	    exception.printStackTrace();
-	    response.sendError(HttpStatus.BAD_REQUEST_400, exception.getMessage());
-	} catch (NoResultException exception) {
-	    exception.printStackTrace();
-	    response.setStatus(HttpStatus.NO_CONTENT_204);
+	} catch (Exception exception) {
+	    resolveException(exception, response);
 	} finally {
 	    setResponse(response);
 	}
     }
 
-    private RouteWithPath resolveRoute(HttpServletRequest request, HttpServletResponse response) {
-	String url = request.getRequestURI();
-	String[] urlParts = url.split("/");
+    private void resolveException(Exception exception, HttpServletResponse response) throws IOException {
+	exception.printStackTrace();
+	if (exception instanceof NotResolvedRouteException) {
+	    response.sendError(HttpStatus.NOT_FOUND_404, exception.getMessage());
+	} else if (exception instanceof WrongRequestBodyException || exception instanceof InvalidItemException) {
+	    response.sendError(HttpStatus.UNPROCESSABLE_ENTITY_422, exception.getMessage());
+	} else if (exception instanceof NotSupportedMethodException) {
+	    response.sendError(HttpStatus.BAD_REQUEST_400, exception.getMessage());
+	} else if (exception instanceof NoResultException) {
+	    response.setStatus(HttpStatus.NO_CONTENT_204);
+	} else if (exception instanceof UnauthenticatedException) {
+	    response.sendError(HttpStatus.UNAUTHORIZED_401, exception.getMessage());
+	} else if (exception instanceof UnauthorizedException) {
+	    response.sendError(HttpStatus.FORBIDDEN_403, exception.getMessage());
+	}
+    }
+
+    private RouteWithPath resolveRoute(String requestUrl, HttpServletResponse response) {
+	String[] urlParts = requestUrl.split("/");
 	if (urlParts.length < 2) {
 	    throw new NotResolvedRouteException();
 	}

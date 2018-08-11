@@ -16,22 +16,22 @@ public class UserRole {
 
     @NotNull
     @Size(min = 3, max = 25)
-    private String role;
+    private String name;
 
     public long getId() {
 	return id;
     }
 
-    public String getRole() {
-	return role;
+    public String getName() {
+	return name;
     }
 
     public void setId(long id) {
 	this.id = id;
     }
 
-    public void setRole(String role) {
-	this.role = role;
+    public void setName(String role) {
+	this.name = role;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class UserRole {
 	final int prime = 31;
 	int result = 1;
 	result = prime * result + (int) (id ^ (id >>> 32));
-	result = prime * result + ((role == null) ? 0 : role.hashCode());
+	result = prime * result + ((name == null) ? 0 : name.hashCode());
 	return result;
     }
 
@@ -54,12 +54,35 @@ public class UserRole {
 	UserRole other = (UserRole) obj;
 	if (id != other.id)
 	    return false;
-	if (role == null) {
-	    if (other.role != null)
+	if (name == null) {
+	    if (other.name != null)
 		return false;
-	} else if (!role.equals(other.role))
+	} else if (!name.equals(other.name))
 	    return false;
 	return true;
+    }
+
+    public enum Role {
+
+	PLAYER("player"), ADMIN("admin");
+
+	private String translation;
+
+	Role(String translation) {
+	    this.translation = translation;
+	}
+
+	public String getTranslation() {
+	    return translation;
+	}
+
+	public boolean equalsByTranslation(String role) {
+	    return translation.equals(role);
+	}
+
+	public static boolean isAdmin(String role) {
+	    return ADMIN.translation.equals(role);
+	}
     }
 
 }
