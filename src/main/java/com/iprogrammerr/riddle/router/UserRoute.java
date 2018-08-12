@@ -24,44 +24,59 @@ public class UserRoute extends Route {
     private static final String SIGN_UP_PATH = "sign-up";
     private static final String REFRESH_TOKEN_PATH = "token-refresh";
     private static final String ACTIVATE_PATH = "activate";
-    // TODO think about solution
-    private static final String ACTIVATE_LINK_BASE = "http://www.iprogrammerr.com:9000/riddle/user/" + ACTIVATE_PATH;
+    private String activatingLink;
     private ValidationService validationService;
     private UserService userService;
     private SecurityService securityService;
     private EmailService emailService;
 
-    public UserRoute(UserService userService, ValidationService validationService, SecurityService securityService,
-	    EmailService emailService, JsonService jsonService) {
+    public UserRoute(String activatingLinkBase, UserService userService, ValidationService validationService,
+	    SecurityService securityService, EmailService emailService, JsonService jsonService) {
 	super("user", jsonService);
+	this.activatingLink = activatingLinkBase + "/user/" + ACTIVATE_PATH;
 	this.validationService = validationService;
 	this.userService = userService;
 	this.securityService = securityService;
 	this.emailService = emailService;
     }
 
-    private SignInResponse signIn(ToSignInUser toSignInUser) {
+    private void signIn(HttpServletRequest request, HttpServletResponse response) {
+	ToSignInUser toSignInUser = getBody(ToSignInUser.class, request);
 	validationService.validateObject(ToSignInUser.class, toSignInUser);
 	System.out.println(toSignInUser);
 	User user = userService.getUserByNameOrEmail(toSignInUser.nameEmail);
 	UserRole role = user.getUserRole();
 	Token accessToken = securityService.createAccessToken(user.getName(), role.getName());
 	Token refreshToken = securityService.createRefreshToken(user.getName(), role.getName());
-	return new SignInResponse(role.getName(), accessToken, refreshToken);
+	setBody(new SignInResponse(role.getName(), accessToken, refreshToken), response);
+	response.setStatus(HttpStatus.OK_200);
     }
 
-    private ActivatingLink signUp(User user) {
+    private void signUp(HttpServletRequest request, HttpServletResponse response) {
+	User user = getBody(User.class, request);
+	System.out.println("User before creating " + user);
 	validationService.validateEntity(User.class, user);
 	UserRole userRole = userService.getUserRoleByName(UserRole.Role.PLAYER.getTranslation());
 	user.setUserRole(userRole);
-	long id = userService.create(user);
-	System.out.println(user);
-	String activatingLink = ACTIVATE_LINK_BASE + "?id=" + id;
-	return new ActivatingLink(activatingLink);
+	long id = 1;// userService.create(user);
+	System.out.println("User after creating " + user);
+	ActivatingLink link = new ActivatingLink(activatingLink + "?id=" + id);
+	emailService.sendSignUpEmail(user.getEmail(), link.getActivatingLink());
+	setBody(activatingLink, response);
+	response.setStatus(HttpStatus.CREATED_201);
     }
 
-    private Token refreshToken(String refreshToken) {
-	return securityService.createAccessToken(refreshToken);
+    private void refreshToken(HttpServletRequest request, HttpServletResponse response) {
+	Token refreshToken = getBody(Token.class, request);
+	Token accessToken = securityService.createAccessToken(refreshToken.getValue());
+	setBody(accessToken, response);
+	response.setStatus(HttpStatus.OK_200);
+    }
+
+    private void activateUser(HttpServletRequest request, HttpServletResponse response) {
+	long id = getParameter(Long.class, "id", request);
+	userService.activateUser(id);
+	response.setStatus(HttpStatus.OK_200);
     }
 
     @Override
@@ -72,23 +87,13 @@ public class UserRoute extends Route {
     @Override
     public void resolvePostRequest(String path, HttpServletRequest request, HttpServletResponse response) {
 	if (path.equals(SIGN_IN_PATH)) {
-	    ToSignInUser user = getBody(ToSignInUser.class, request);
-	    setBody(signIn(user), response);
-	    response.setStatus(HttpStatus.OK_200);
+	    signIn(request, response);
 	} else if (path.equals(SIGN_UP_PATH)) {
-	    User user = getBody(User.class, request);
-	    ActivatingLink activatingLink = signUp(user);
-	    setBody(activatingLink, response);
-	    response.setStatus(HttpStatus.CREATED_201);
+	    signUp(request, response);
 	} else if (path.equals(REFRESH_TOKEN_PATH)) {
-	    Token refreshToken = getBody(Token.class, request);
-	    Token accessToken = refreshToken(refreshToken.getValue());
-	    setBody(accessToken, response);
-	    response.setStatus(HttpStatus.OK_200);
+	    refreshToken(request, response);
 	} else if (path.equals(ACTIVATE_PATH)) {
-	    long id = getParameter(Long.class, "id", request);
-	    userService.activateUser(id);
-	    response.setStatus(HttpStatus.OK_200);
+	    activateUser(request, response);
 	} else {
 	    throw new NotResolvedRouteException();
 	}

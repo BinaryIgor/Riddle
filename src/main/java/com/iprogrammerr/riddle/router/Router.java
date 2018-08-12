@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.HttpStatus;
+import org.hibernate.exception.ConstraintViolationException;
 
 import com.iprogrammerr.riddle.exception.InvalidItemException;
 import com.iprogrammerr.riddle.exception.NotResolvedRouteException;
@@ -59,7 +60,7 @@ public class Router extends HttpServlet {
 	    response.sendError(HttpStatus.NOT_FOUND_404, exception.getMessage());
 	} else if (exception instanceof WrongRequestBodyException || exception instanceof InvalidItemException) {
 	    response.sendError(HttpStatus.UNPROCESSABLE_ENTITY_422, exception.getMessage());
-	} else if (exception instanceof NotSupportedMethodException || exception instanceof RequestParameterException) {
+	} else if (isBadRequest(exception)) {
 	    response.sendError(HttpStatus.BAD_REQUEST_400, exception.getMessage());
 	} else if (exception instanceof NoResultException) {
 	    response.setStatus(HttpStatus.NO_CONTENT_204);
@@ -67,7 +68,14 @@ public class Router extends HttpServlet {
 	    response.sendError(HttpStatus.UNAUTHORIZED_401, exception.getMessage());
 	} else if (exception instanceof UnauthorizedException) {
 	    response.sendError(HttpStatus.FORBIDDEN_403, exception.getMessage());
+	} else {
+	    response.sendError(HttpStatus.INTERNAL_SERVER_ERROR_500);
 	}
+    }
+
+    private boolean isBadRequest(Exception exception) {
+	return exception instanceof NotSupportedMethodException || exception instanceof RequestParameterException
+		|| exception instanceof ConstraintViolationException;
     }
 
     private RouteWithPath resolveRoute(String requestUrl, HttpServletResponse response) {
