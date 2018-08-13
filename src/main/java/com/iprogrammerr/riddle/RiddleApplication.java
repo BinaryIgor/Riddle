@@ -39,7 +39,8 @@ public class RiddleApplication {
 	ValidationService validationService = new ValidationService(
 		Validation.buildDefaultValidatorFactory().getValidator());
 	JsonService jsonService = new JsonService();
-	EmailService emailService = new EmailService();
+	EmailService emailService = new EmailService(configuration.getAdminEmail(),
+		configuration.getAdminEmailPassword(), configuration.getSmtpHost(), configuration.getSmtpPort());
 	SecurityService securityService = new SecurityService(userService);
 
 	String activatingLinkBase = getActivatingLinkBase(configuration);

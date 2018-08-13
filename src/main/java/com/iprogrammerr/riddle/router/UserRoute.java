@@ -43,7 +43,6 @@ public class UserRoute extends Route {
     private void signIn(HttpServletRequest request, HttpServletResponse response) {
 	ToSignInUser toSignInUser = getBody(ToSignInUser.class, request);
 	validationService.validateObject(ToSignInUser.class, toSignInUser);
-	System.out.println(toSignInUser);
 	User user = userService.getUserByNameOrEmail(toSignInUser.nameEmail);
 	UserRole role = user.getUserRole();
 	Token accessToken = securityService.createAccessToken(user.getName(), role.getName());
@@ -61,8 +60,8 @@ public class UserRoute extends Route {
 	long id = 1;// userService.create(user);
 	System.out.println("User after creating " + user);
 	ActivatingLink link = new ActivatingLink(activatingLink + "?id=" + id);
-	emailService.sendSignUpEmail(user.getEmail(), link.getActivatingLink());
-	setBody(activatingLink, response);
+	// emailService.sendSignUpEmail(user.getEmail(), link.getActivatingLink());
+	setBody(link, response);
 	response.setStatus(HttpStatus.CREATED_201);
     }
 
