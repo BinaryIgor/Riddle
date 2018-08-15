@@ -1,4 +1,4 @@
-package com.iprogrammerr.riddle.model;
+package com.iprogrammerr.riddle.model.router;
 
 import com.iprogrammerr.riddle.router.Route;
 

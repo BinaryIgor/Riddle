@@ -1,4 +1,6 @@
-package com.iprogrammerr.riddle.model;
+package com.iprogrammerr.riddle.model.response;
+
+import com.iprogrammerr.riddle.model.security.Token;
 
 public class SignInResponse {
 

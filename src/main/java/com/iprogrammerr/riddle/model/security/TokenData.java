@@ -1,4 +1,4 @@
-package com.iprogrammerr.riddle.model;
+package com.iprogrammerr.riddle.model.security;
 
 public class TokenData {
 

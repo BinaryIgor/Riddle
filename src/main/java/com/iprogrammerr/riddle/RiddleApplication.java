@@ -21,6 +21,7 @@ import com.iprogrammerr.riddle.server.JettyServer;
 import com.iprogrammerr.riddle.service.crud.UserService;
 import com.iprogrammerr.riddle.service.email.EmailService;
 import com.iprogrammerr.riddle.service.json.JsonService;
+import com.iprogrammerr.riddle.service.security.EncryptionService;
 import com.iprogrammerr.riddle.service.security.SecurityService;
 import com.iprogrammerr.riddle.service.validation.ValidationService;
 
@@ -29,10 +30,7 @@ public class RiddleApplication {
     public static void main(String[] args) throws Exception {
 	ApplicationConfiguration configuration = getConfiguration();
 
-	SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class)
-		.addAnnotatedClass(UserRole.class).buildSessionFactory();
-	List<Route> routes = new ArrayList<>();
-
+	SessionFactory factory = buildSessionFactory();
 	UserDao userDao = new UserDao(factory);
 
 	UserService userService = new UserService(userDao);
@@ -42,19 +40,15 @@ public class RiddleApplication {
 	EmailService emailService = new EmailService(configuration.getAdminEmail(),
 		configuration.getAdminEmailPassword(), configuration.getSmtpHost(), configuration.getSmtpPort());
 	SecurityService securityService = new SecurityService(userService);
+	EncryptionService encryptionService = new EncryptionService();
 
-	String activatingLinkBase = getActivatingLinkBase(configuration);
-	UserRoute userRoute = new UserRoute(activatingLinkBase, userService, validationService, securityService,
-		emailService, jsonService);
+	List<Route> routes = new ArrayList<>();
+	UserRoute userRoute = new UserRoute(configuration.getUserActivationLinkBase(), userService, validationService,
+		securityService, encryptionService, emailService, jsonService);
 	routes.add(userRoute);
 
 	JettyServer server = new JettyServer(configuration.getServerPort(), factory);
 	server.start(configuration.getServerContextPath(), routes, securityService);
-    }
-
-    private static String getActivatingLinkBase(ApplicationConfiguration configuration) {
-	return configuration.getServerDomain() + ":" + configuration.getServerPort() + "/"
-		+ configuration.getServerContextPath();
     }
 
     private static ApplicationConfiguration getConfiguration() throws IOException {
@@ -63,6 +57,11 @@ public class RiddleApplication {
 	properties.load(inputStream);
 	inputStream.close();
 	return new ApplicationConfiguration(properties);
+    }
+
+    private static SessionFactory buildSessionFactory() {
+	return new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class)
+		.addAnnotatedClass(UserRole.class).buildSessionFactory();
     }
 
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.iprogrammerr.riddle.entity.UserRole;
-import com.iprogrammerr.riddle.model.SecuredPath;
+import com.iprogrammerr.riddle.model.security.SecuredPath;
 
 public class SecurityConfiguration {
 

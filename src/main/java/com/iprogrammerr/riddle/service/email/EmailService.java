@@ -13,7 +13,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import com.iprogrammerr.riddle.exception.EmailException;
+import com.iprogrammerr.riddle.exception.email.EmailException;
 
 public class EmailService {
 
@@ -31,7 +31,6 @@ public class EmailService {
 	properties.put("mail.smtp.starttls.enable", true);
 	properties.put("mail.smtp.host", smtpHost);
 	properties.put("mail.stmp.port", String.valueOf(smtpPort));
-	properties.put("mail.debug", "true");
     }
 
     public void sendSignUpEmail(String recipentEmail, String activatingLink) {

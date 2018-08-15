@@ -2,6 +2,8 @@ package com.iprogrammerr.riddle.dao;
 
 import java.util.List;
 
+import javax.persistence.NoResultException;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -51,14 +53,19 @@ public class Dao<Entity> {
 
     public Entity get(long id) {
 	Session session = sessionFactory.openSession();
+	Entity entity = null;
 	try {
-	    return session.get(clazz, id);
+	    entity = session.get(clazz, id);
 	} catch (Exception exception) {
 	    exception.printStackTrace();
 	    throw exception;
 	} finally {
 	    session.close();
 	}
+	if (entity == null) {
+	    throw new NoResultException();
+	}
+	return entity;
     }
 
     public List<Entity> get() {

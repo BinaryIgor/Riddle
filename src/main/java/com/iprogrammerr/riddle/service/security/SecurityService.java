@@ -6,12 +6,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.iprogrammerr.riddle.entity.User;
 import com.iprogrammerr.riddle.entity.UserRole;
-import com.iprogrammerr.riddle.exception.TokenParsingException;
-import com.iprogrammerr.riddle.exception.UnauthenticatedException;
-import com.iprogrammerr.riddle.exception.UnauthorizedException;
-import com.iprogrammerr.riddle.model.SecuredPath;
-import com.iprogrammerr.riddle.model.Token;
-import com.iprogrammerr.riddle.model.TokenData;
+import com.iprogrammerr.riddle.exception.security.UnauthenticatedException;
+import com.iprogrammerr.riddle.exception.security.UnauthorizedException;
+import com.iprogrammerr.riddle.exception.validation.TokenParsingException;
+import com.iprogrammerr.riddle.model.security.SecuredPath;
+import com.iprogrammerr.riddle.model.security.Token;
+import com.iprogrammerr.riddle.model.security.TokenData;
 import com.iprogrammerr.riddle.router.security.SecurityConfiguration;
 import com.iprogrammerr.riddle.router.security.SecurityConfiguration.TokenType;
 import com.iprogrammerr.riddle.service.crud.UserService;

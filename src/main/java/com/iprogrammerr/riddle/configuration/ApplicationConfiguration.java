@@ -6,7 +6,7 @@ public class ApplicationConfiguration {
 
     private String serverContextPath;
     private int serverPort;
-    private String serverDomain;
+    private String userActivationLinkBase;
     private String adminEmail;
     private String adminEmailPassword;
     private String smtpHost;
@@ -15,7 +15,7 @@ public class ApplicationConfiguration {
     public ApplicationConfiguration(Properties properties) {
 	serverContextPath = properties.getProperty("server.context-path");
 	serverPort = Integer.parseInt(properties.getProperty("server.port"));
-	serverDomain = properties.getProperty("server.domain");
+	userActivationLinkBase = properties.getProperty("user.activation-link-base");
 	adminEmail = properties.getProperty("admin.email");
 	adminEmailPassword = properties.getProperty("admin.email.password");
 	smtpHost = properties.getProperty("smtp.host");
@@ -30,8 +30,8 @@ public class ApplicationConfiguration {
 	return serverPort;
     }
 
-    public String getServerDomain() {
-	return serverDomain;
+    public String getUserActivationLinkBase() {
+	return userActivationLinkBase;
     }
 
     public String getAdminEmail() {

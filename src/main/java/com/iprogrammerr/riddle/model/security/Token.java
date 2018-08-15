@@ -1,4 +1,4 @@
-package com.iprogrammerr.riddle.model;
+package com.iprogrammerr.riddle.model.security;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

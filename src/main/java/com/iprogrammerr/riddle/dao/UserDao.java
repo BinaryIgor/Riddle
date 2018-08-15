@@ -6,6 +6,7 @@ import org.hibernate.query.Query;
 
 import com.iprogrammerr.riddle.entity.User;
 import com.iprogrammerr.riddle.entity.UserRole;
+import com.iprogrammerr.riddle.model.Field;
 
 public class UserDao extends Dao<User> {
 
@@ -54,16 +55,27 @@ public class UserDao extends Dao<User> {
 	}
     }
 
-    public void activateUser(long id) {
+    public boolean existsByEmail(String email) {
+	return exists(new Field<>("email", email));
+    }
+
+    public boolean existsByName(String name) {
+	return exists(new Field<>("name", name));
+    }
+
+    public boolean exists(Field<String> field) {
 	Session session = sessionFactory.openSession();
 	try {
-	    User user = get(id);
-	    user.setActive(true);
-	    update(user);
+	    String statement = "select count(u) from user u where " + field.getKey() + " = :" + field.getKey();
+	    Query<Long> query = session.createQuery(statement, Long.class);
+	    query.setParameter(field.getKey(), field.getValue());
+	    return query.getSingleResult() > 0;
 	} catch (Exception exception) {
-	    throw exception;
+	    exception.printStackTrace();
+	    return false;
 	} finally {
 	    session.close();
 	}
     }
+
 }

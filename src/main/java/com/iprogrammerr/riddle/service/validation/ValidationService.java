@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
-import com.iprogrammerr.riddle.exception.InvalidItemException;
+import com.iprogrammerr.riddle.exception.validation.InvalidItemException;
 
 public class ValidationService {
 

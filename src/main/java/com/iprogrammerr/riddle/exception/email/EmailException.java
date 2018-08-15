@@ -1,4 +1,4 @@
-package com.iprogrammerr.riddle.exception;
+package com.iprogrammerr.riddle.exception.email;
 
 public class EmailException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package com.iprogrammerr.riddle.exception;
+package com.iprogrammerr.riddle.exception.request;
 
 public class RequestParameterException extends RuntimeException {
 

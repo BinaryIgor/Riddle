@@ -1,6 +1,8 @@
 package com.iprogrammerr.riddle.router;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,18 +11,19 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolationException;
 
 import org.eclipse.jetty.http.HttpStatus;
-import org.hibernate.exception.ConstraintViolationException;
 
-import com.iprogrammerr.riddle.exception.InvalidItemException;
-import com.iprogrammerr.riddle.exception.NotResolvedRouteException;
-import com.iprogrammerr.riddle.exception.NotSupportedMethodException;
-import com.iprogrammerr.riddle.exception.RequestParameterException;
-import com.iprogrammerr.riddle.exception.UnauthenticatedException;
-import com.iprogrammerr.riddle.exception.UnauthorizedException;
-import com.iprogrammerr.riddle.exception.WrongRequestBodyException;
-import com.iprogrammerr.riddle.model.RouteWithPath;
+import com.iprogrammerr.riddle.exception.crud.DuplicateEntryException;
+import com.iprogrammerr.riddle.exception.request.RequestParameterException;
+import com.iprogrammerr.riddle.exception.request.WrongRequestBodyException;
+import com.iprogrammerr.riddle.exception.router.NotResolvedRouteException;
+import com.iprogrammerr.riddle.exception.router.NotSupportedMethodException;
+import com.iprogrammerr.riddle.exception.security.UnauthenticatedException;
+import com.iprogrammerr.riddle.exception.security.UnauthorizedException;
+import com.iprogrammerr.riddle.exception.validation.InvalidItemException;
+import com.iprogrammerr.riddle.model.router.RouteWithPath;
 import com.iprogrammerr.riddle.service.security.SecurityService;
 
 public class Router extends HttpServlet {
@@ -30,6 +33,9 @@ public class Router extends HttpServlet {
     private static final String POST = "POST";
     private static final String PUT = "PUT";
     private static final String DELETE = "DELETE";
+    public static final String CONTENT_LENGTH_HEADER = "Content-Length";
+    public static final String ACCESS_CONTROL_ALLOW_HEADERS_HEADER = "Access-Control-Allow-Headers";
+    public static final String ACCESS_CONTROL_ALLOW_ORIGIN_HEADER = "Access-Control-Allow-Origin";
     private final List<Route> routes = new ArrayList<>();
     private SecurityService securityService;
 
@@ -45,37 +51,44 @@ public class Router extends HttpServlet {
 	    throws ServletException, IOException {
 	try {
 	    securityService.check(request);
+	    setResponse(response);
 	    RouteWithPath route = resolveRoute(request.getRequestURI(), response);
 	    resolveRequest(request, response, route);
 	} catch (Exception exception) {
 	    resolveException(exception, response);
-	} finally {
-	    setResponse(response);
 	}
     }
 
     private void resolveException(Exception exception, HttpServletResponse response) throws IOException {
 	exception.printStackTrace();
 	if (exception instanceof NotResolvedRouteException) {
-	    response.sendError(HttpStatus.NOT_FOUND_404, exception.getMessage());
-	} else if (exception instanceof WrongRequestBodyException || exception instanceof InvalidItemException) {
-	    response.sendError(HttpStatus.UNPROCESSABLE_ENTITY_422, exception.getMessage());
+	    response.setStatus(HttpStatus.NOT_FOUND_404);
+	} else if (isUnprocessableEntity(exception)) {
+	    response.setStatus(HttpStatus.UNPROCESSABLE_ENTITY_422);
 	} else if (isBadRequest(exception)) {
-	    response.sendError(HttpStatus.BAD_REQUEST_400, exception.getMessage());
+	    response.setStatus(HttpStatus.BAD_REQUEST_400);
+	    setBody(exception.getMessage(), response);
 	} else if (exception instanceof NoResultException) {
 	    response.setStatus(HttpStatus.NO_CONTENT_204);
 	} else if (exception instanceof UnauthenticatedException) {
-	    response.sendError(HttpStatus.UNAUTHORIZED_401, exception.getMessage());
+	    response.setStatus(HttpStatus.UNAUTHORIZED_401);
 	} else if (exception instanceof UnauthorizedException) {
-	    response.sendError(HttpStatus.FORBIDDEN_403, exception.getMessage());
+	    response.setStatus(HttpStatus.FORBIDDEN_403);
 	} else {
-	    response.sendError(HttpStatus.INTERNAL_SERVER_ERROR_500);
+	    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
 	}
+	setBody(exception.getMessage(), response);
     }
 
     private boolean isBadRequest(Exception exception) {
-	return exception instanceof NotSupportedMethodException || exception instanceof RequestParameterException
-		|| exception instanceof ConstraintViolationException;
+	return exception instanceof NotSupportedMethodException || exception instanceof RequestParameterException;
+    }
+
+    private boolean isUnprocessableEntity(Exception exception) {
+	return exception instanceof WrongRequestBodyException || exception instanceof InvalidItemException
+		|| exception instanceof ConstraintViolationException
+		|| exception instanceof org.hibernate.exception.ConstraintViolationException
+		|| exception instanceof DuplicateEntryException;
     }
 
     private RouteWithPath resolveRoute(String requestUrl, HttpServletResponse response) {
@@ -139,8 +152,16 @@ public class Router extends HttpServlet {
     }
 
     private void setResponse(HttpServletResponse response) {
-	response.setContentType("application/json");
-	response.setHeader("Access-Control-Allow-Origin", "*");
+	response.setHeader(ACCESS_CONTROL_ALLOW_HEADERS_HEADER, "Content-Type");
+	response.setHeader(ACCESS_CONTROL_ALLOW_ORIGIN_HEADER, "*");
+    }
+
+    protected void setBody(String message, HttpServletResponse response) {
+	try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()))) {
+	    writer.write(message);
+	} catch (IOException exception) {
+	    exception.printStackTrace();
+	}
     }
 
 }

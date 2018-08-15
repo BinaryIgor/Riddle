@@ -33,8 +33,12 @@ public class UserService extends CrudService<User> {
 	return userDao.getUserRoleByName(name);
     }
 
-    public void activateUser(long id) {
-	userDao.activateUser(id);
+    public boolean existsByEmail(String email) {
+	return userDao.existsByEmail(email);
+    }
+
+    public boolean existsByName(String name) {
+	return userDao.existsByName(name);
     }
 
 }

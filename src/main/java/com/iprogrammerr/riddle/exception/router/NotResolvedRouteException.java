@@ -1,4 +1,4 @@
-package com.iprogrammerr.riddle.exception;
+package com.iprogrammerr.riddle.exception.router;
 
 public class NotResolvedRouteException extends RuntimeException {
 

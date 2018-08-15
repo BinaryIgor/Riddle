@@ -7,9 +7,10 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.iprogrammerr.riddle.exception.JsonParsingException;
-import com.iprogrammerr.riddle.exception.RequestParameterException;
-import com.iprogrammerr.riddle.exception.WrongRequestBodyException;
+import com.iprogrammerr.riddle.exception.request.RequestParameterException;
+import com.iprogrammerr.riddle.exception.request.WrongRequestBodyException;
+import com.iprogrammerr.riddle.exception.router.NotResolvedRouteException;
+import com.iprogrammerr.riddle.exception.validation.JsonParsingException;
 import com.iprogrammerr.riddle.service.json.JsonService;
 import com.iprogrammerr.riddle.util.StringUtil;
 
@@ -23,13 +24,21 @@ public abstract class Route {
 	this.jsonService = jsonService;
     }
 
-    public abstract void resolveGetRequest(String path, HttpServletRequest request, HttpServletResponse response);
+    public void resolveGetRequest(String path, HttpServletRequest request, HttpServletResponse response) {
+	throw new NotResolvedRouteException();
+    }
 
-    public abstract void resolvePostRequest(String path, HttpServletRequest request, HttpServletResponse response);
+    public void resolvePostRequest(String path, HttpServletRequest request, HttpServletResponse response) {
+	throw new NotResolvedRouteException();
+    }
 
-    public abstract void resolvePutRequest(String path, HttpServletRequest request, HttpServletResponse response);
+    public void resolvePutRequest(String path, HttpServletRequest request, HttpServletResponse response) {
+	throw new NotResolvedRouteException();
+    }
 
-    public abstract void resolveDeleteRequest(String path, HttpServletRequest request, HttpServletResponse response);
+    public void resolveDeleteRequest(String path, HttpServletRequest request, HttpServletResponse response) {
+	throw new NotResolvedRouteException();
+    }
 
     public String getMainPath() {
 	return mainPath;
@@ -49,6 +58,7 @@ public abstract class Route {
 	try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()))) {
 	    String body = jsonService.serialize(object);
 	    writer.write(body);
+	    response.setContentLength(body.getBytes().length);
 	} catch (IOException exception) {
 	    exception.printStackTrace();
 	    throw new JsonParsingException(exception);
