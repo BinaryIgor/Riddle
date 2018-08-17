@@ -6,16 +6,16 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.NoResultException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolationException;
 
 import org.eclipse.jetty.http.HttpStatus;
 
-import com.iprogrammerr.riddle.exception.crud.DuplicateEntryException;
+import com.iprogrammerr.riddle.exception.creation.CreationException;
+import com.iprogrammerr.riddle.exception.database.DuplicateEntryException;
+import com.iprogrammerr.riddle.exception.database.NoResultException;
 import com.iprogrammerr.riddle.exception.request.RequestParameterException;
 import com.iprogrammerr.riddle.exception.request.WrongRequestBodyException;
 import com.iprogrammerr.riddle.exception.router.NotResolvedRouteException;
@@ -86,9 +86,7 @@ public class Router extends HttpServlet {
 
     private boolean isUnprocessableEntity(Exception exception) {
 	return exception instanceof WrongRequestBodyException || exception instanceof InvalidItemException
-		|| exception instanceof ConstraintViolationException
-		|| exception instanceof org.hibernate.exception.ConstraintViolationException
-		|| exception instanceof DuplicateEntryException;
+		|| exception instanceof DuplicateEntryException || exception instanceof CreationException;
     }
 
     private RouteWithPath resolveRoute(String requestUrl, HttpServletResponse response) {

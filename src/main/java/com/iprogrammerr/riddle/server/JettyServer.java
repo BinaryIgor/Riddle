@@ -6,8 +6,8 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.hibernate.SessionFactory;
 
+import com.iprogrammerr.riddle.database.DatabaseConnectionManager;
 import com.iprogrammerr.riddle.router.Route;
 import com.iprogrammerr.riddle.router.Router;
 import com.iprogrammerr.riddle.service.security.SecurityService;
@@ -16,15 +16,15 @@ public class JettyServer {
 
     private final Server server = new Server();
     private int port;
-    private SessionFactory sessionFactory;
+    private DatabaseConnectionManager connectionManager;
 
     public JettyServer(int port) {
 	this.port = port;
     }
 
-    public JettyServer(int port, SessionFactory sessionFactory) {
+    public JettyServer(int port, DatabaseConnectionManager connectionManager) {
 	this.port = port;
-	this.sessionFactory = sessionFactory;
+	this.connectionManager = connectionManager;
     }
 
     public void start(String contextPath, List<Route> routes, SecurityService securityService) throws Exception {
@@ -40,8 +40,8 @@ public class JettyServer {
     }
 
     public void stop() throws Exception {
-	if (sessionFactory != null) {
-	    sessionFactory.close();
+	if (connectionManager != null) {
+	    connectionManager.close();
 	}
 	server.stop();
     }

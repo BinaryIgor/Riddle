@@ -11,6 +11,9 @@ public class ApplicationConfiguration {
     private String adminEmailPassword;
     private String smtpHost;
     private int smtpPort;
+    private String databaseUsername;
+    private String databasePassword;
+    private String jdbcUrl;
 
     public ApplicationConfiguration(Properties properties) {
 	serverContextPath = properties.getProperty("server.context-path");
@@ -20,6 +23,9 @@ public class ApplicationConfiguration {
 	adminEmailPassword = properties.getProperty("admin.email.password");
 	smtpHost = properties.getProperty("smtp.host");
 	smtpPort = Integer.parseInt(properties.getProperty("smtp.port"));
+	databaseUsername = properties.getProperty("database.username");
+	databasePassword = properties.getProperty("database.password");
+	jdbcUrl = properties.getProperty("jdbc-url");
     }
 
     public String getServerContextPath() {
@@ -48,6 +54,18 @@ public class ApplicationConfiguration {
 
     public int getSmtpPort() {
 	return smtpPort;
+    }
+
+    public String getDatabaseUsername() {
+	return databaseUsername;
+    }
+
+    public String getDatabasePassword() {
+	return databasePassword;
+    }
+
+    public String getJdbcUrl() {
+	return jdbcUrl;
     }
 
 }

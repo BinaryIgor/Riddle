@@ -7,12 +7,13 @@ import org.eclipse.jetty.http.HttpStatus;
 
 import com.iprogrammerr.riddle.entity.User;
 import com.iprogrammerr.riddle.entity.UserRole;
-import com.iprogrammerr.riddle.exception.crud.DuplicateEntryException;
+import com.iprogrammerr.riddle.exception.database.DuplicateEntryException;
 import com.iprogrammerr.riddle.exception.router.NotResolvedRouteException;
 import com.iprogrammerr.riddle.exception.security.UnauthenticatedException;
 import com.iprogrammerr.riddle.exception.security.UnauthorizedException;
-import com.iprogrammerr.riddle.model.ToSignInUser;
-import com.iprogrammerr.riddle.model.Username;
+import com.iprogrammerr.riddle.model.json.ToSignInUser;
+import com.iprogrammerr.riddle.model.json.ToSignUpUser;
+import com.iprogrammerr.riddle.model.json.Username;
 import com.iprogrammerr.riddle.model.response.SignInResponse;
 import com.iprogrammerr.riddle.model.security.Activator;
 import com.iprogrammerr.riddle.model.security.Token;
@@ -65,19 +66,18 @@ public class UserRoute extends Route {
     }
 
     private void signUp(HttpServletRequest request, HttpServletResponse response) {
-	User user = getBody(User.class, request);
-	validationService.validateEntity(User.class, user);
-	String encryptedPassword = encryptionService.encrypt(user.getPassword());
-	user.setPassword(encryptedPassword);
-	UserRole userRole = userService.getUserRoleByName(UserRole.Role.PLAYER.getTranslation());
-	user.setUserRole(userRole);
-	if (userService.existsByEmail(user.getEmail())) {
+	ToSignUpUser toSignUpUser = getBody(ToSignUpUser.class, request);
+	validationService.validateEntity(ToSignUpUser.class, toSignUpUser);
+	if (userService.existsByEmail(toSignUpUser.email)) {
 	    throw new DuplicateEntryException("Given email is already taken.");
 	}
-	if (userService.existsByName(user.getName())) {
+	if (userService.existsByName(toSignUpUser.name)) {
 	    throw new DuplicateEntryException("Given name is already taken.");
 	}
-	long id = userService.create(user);
+	String encryptedPassword = encryptionService.encrypt(toSignUpUser.password);
+	UserRole userRole = userService.getUserRoleByName(UserRole.Role.PLAYER.getTranslation());
+	User user = new User(toSignUpUser.email, toSignUpUser.name, encryptedPassword, null, userRole);
+	long id = userService.createUser(user);
 	String userHash = encryptionService.getToSendUserHash(user);
 	String activatingLink = activationLinkBase + "?id=" + id + "&activate=" + userHash;
 	emailService.sendSignUpEmail(user.getEmail(), activatingLink);
@@ -94,13 +94,12 @@ public class UserRoute extends Route {
     private void activateUser(HttpServletRequest request, HttpServletResponse response) {
 	Activator activator = getBody(Activator.class, request);
 	validationService.validateObject(Activator.class, activator);
-	User user = userService.get(activator.id);
+	User user = userService.getUser(activator.id);
 	String userHash = encryptionService.getToSendUserHash(user);
 	if (!userHash.equals(activator.hash)) {
 	    throw new UnauthorizedException("Wrong activating hash.");
 	}
-	user.setActive(true);
-	userService.update(user);
+	userService.activateUser(user.getId());
 	setBody(new Username(user.getName()), response);
 	response.setStatus(HttpStatus.OK_200);
     }

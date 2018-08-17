@@ -1,4 +1,4 @@
-package com.iprogrammerr.riddle.exception.crud;
+package com.iprogrammerr.riddle.exception.database;
 
 public class DuplicateEntryException extends RuntimeException {
 

@@ -2,33 +2,31 @@ package com.iprogrammerr.riddle.service.crud;
 
 import java.util.List;
 
-import com.iprogrammerr.riddle.dao.Dao;
+import com.iprogrammerr.riddle.database.DatabaseConnectionManager;
 
 public abstract class CrudService<Entity> {
 
-    protected Dao<Entity> dao;
+    private String entityName;
+    private DatabaseConnectionManager connectionManager;
 
-    public CrudService(Dao<Entity> dao) {
-	this.dao = dao;
-    }
-
-    public long create(Entity entity) {
-	return dao.create(entity);
+    public CrudService(String entityName, DatabaseConnectionManager connectionManager) {
+	this.entityName = entityName;
+	this.connectionManager = connectionManager;
     }
 
     public void update(Entity entity) {
-	dao.update(entity);
+
     }
 
     public void delete(Entity entity) {
-	dao.delete(entity);
+
     }
 
     public Entity get(long id) {
-	return dao.get(id);
+	return null;
     }
 
     public List<Entity> get() {
-	return dao.get();
+	return null;
     }
 }
