@@ -18,7 +18,7 @@ public class QueryExecutor {
 	this.connectionManager = connectionManager;
     }
 
-    public <T> T executeSelect(String sql, QueryToObjectConverter<T> converter) {
+    public <T> T executeSelect(String sql, QueryResultToObjectConverter<T> converter) {
 	try (Connection connection = connectionManager.getConnection()) {
 	    Statement statement = connection.createStatement();
 	    ResultSet resultSet = statement.executeQuery(sql);
@@ -26,19 +26,20 @@ public class QueryExecutor {
 	    return converter.convert(resultSet);
 	} catch (Exception exception) {
 	    exception.printStackTrace();
-	    throw new NoResultException(exception);
+	    throw new NoResultException();
 	}
     }
 
     public long executeCreate(String sql) {
 	try (Connection connection = connectionManager.getConnection()) {
 	    PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-	    ResultSet resultSet = preparedStatement.executeQuery();
+	    preparedStatement.executeUpdate();
+	    ResultSet resultSet = preparedStatement.getGeneratedKeys();
 	    resultSet.next();
 	    return resultSet.getLong(1);
 	} catch (Exception exception) {
 	    exception.printStackTrace();
-	    throw new CreationException(exception);
+	    throw new CreationException(exception.getMessage());
 	}
     }
 
@@ -57,9 +58,9 @@ public class QueryExecutor {
 	} catch (Exception exception) {
 	    exception.printStackTrace();
 	    if (mode.equals(ExecuteMode.UPDATE)) {
-		throw new UpdateException(exception);
+		throw new UpdateException(exception.getMessage());
 	    }
-	    throw new DeleteException(exception);
+	    throw new DeleteException(exception.getMessage());
 	}
     }
 

@@ -52,9 +52,8 @@ public class UserRoute extends Route {
 
     private void signIn(HttpServletRequest request, HttpServletResponse response) {
 	ToSignInUser toSignInUser = getBody(ToSignInUser.class, request);
-	validationService.validateObject(ToSignInUser.class, toSignInUser);
-	User user = userService.getUserByNameOrEmail(toSignInUser.nameEmail);
-	String encryptedPassword = encryptionService.encrypt(toSignInUser.password);
+	User user = userService.getUserByNameOrEmail(toSignInUser.getNameEmail());
+	String encryptedPassword = encryptionService.encrypt(toSignInUser.getPassword());
 	if (!encryptedPassword.equals(user.getPassword())) {
 	    throw new UnauthenticatedException("Invalid password.");
 	}
@@ -67,16 +66,16 @@ public class UserRoute extends Route {
 
     private void signUp(HttpServletRequest request, HttpServletResponse response) {
 	ToSignUpUser toSignUpUser = getBody(ToSignUpUser.class, request);
-	validationService.validateEntity(ToSignUpUser.class, toSignUpUser);
-	if (userService.existsByEmail(toSignUpUser.email)) {
+	if (userService.existsByEmail(toSignUpUser.getEmail())) {
 	    throw new DuplicateEntryException("Given email is already taken.");
 	}
-	if (userService.existsByName(toSignUpUser.name)) {
+	if (userService.existsByName(toSignUpUser.getName())) {
 	    throw new DuplicateEntryException("Given name is already taken.");
 	}
-	String encryptedPassword = encryptionService.encrypt(toSignUpUser.password);
-	UserRole userRole = userService.getUserRoleByName(UserRole.Role.PLAYER.getTranslation());
-	User user = new User(toSignUpUser.email, toSignUpUser.name, encryptedPassword, null, userRole);
+	User user = new User(toSignUpUser.getEmail(), toSignUpUser.getName(), toSignUpUser.getPassword());
+	validationService.validateUser(user);
+	user.setPassword(encryptionService.encrypt(toSignUpUser.getPassword()));
+	user.setUserRole(userService.getUserRoleByName(UserRole.Role.PLAYER.getTranslation()));
 	long id = userService.createUser(user);
 	String userHash = encryptionService.getToSendUserHash(user);
 	String activatingLink = activationLinkBase + "?id=" + id + "&activate=" + userHash;
@@ -93,10 +92,10 @@ public class UserRoute extends Route {
 
     private void activateUser(HttpServletRequest request, HttpServletResponse response) {
 	Activator activator = getBody(Activator.class, request);
-	validationService.validateObject(Activator.class, activator);
-	User user = userService.getUser(activator.id);
+	validationService.validateNotNullFieldsRule(Activator.class, activator);
+	User user = userService.getUser(activator.getId());
 	String userHash = encryptionService.getToSendUserHash(user);
-	if (!userHash.equals(activator.hash)) {
+	if (!userHash.equals(activator.getHash())) {
 	    throw new UnauthorizedException("Wrong activating hash.");
 	}
 	userService.activateUser(user.getId());

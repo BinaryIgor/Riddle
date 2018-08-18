@@ -1,7 +1,7 @@
 package com.iprogrammerr.riddle.service.crud;
 
 import com.iprogrammerr.riddle.database.QueryExecutor;
-import com.iprogrammerr.riddle.database.QueryToObjectConverter;
+import com.iprogrammerr.riddle.database.QueryResultToObjectConverter;
 import com.iprogrammerr.riddle.entity.User;
 import com.iprogrammerr.riddle.entity.UserRole;
 
@@ -15,11 +15,10 @@ public class UserService {
     }
 
     public long createUser(User user) {
-	StringBuilder insertBuilder = new StringBuilder();
-	insertBuilder.append("insert into user values(").append(user.getEmail()).append(",").append(user.getName())
-		.append(",").append(user.getUserRole().getId()).append(",").append(user.isActive() ? "1" : "0")
-		.append(")");
-	return queryExecutor.executeCreate(insertBuilder.toString());
+	String insertTemplate = "insert into user (email, name, password, user_role_id) values ('%s', '%s', '%s', %d)";
+	String insertSql = String.format(insertTemplate, user.getEmail(), user.getName(), user.getPassword(),
+		user.getUserRole().getId());
+	return queryExecutor.executeCreate(insertSql);
     }
 
     public void activateUser(long id) {
@@ -67,7 +66,7 @@ public class UserService {
 	});
     }
 
-    private QueryToObjectConverter<User> getQueryToUserConverter() {
+    private QueryResultToObjectConverter<User> getQueryToUserConverter() {
 	return (resultSet) -> {
 	    UserRole userRole = new UserRole(resultSet.getLong(QUERY_USER_ROLE_PREFIX + "id"),
 		    resultSet.getString(QUERY_USER_ROLE_PREFIX + "name"));
