@@ -21,6 +21,7 @@ import com.iprogrammerr.riddle.service.validation.ValidationService;
 
 public class RiddleApplication {
 
+    // TODO log4j config?
     public static void main(String[] args) throws Exception {
 	ApplicationConfiguration configuration = getConfiguration();
 

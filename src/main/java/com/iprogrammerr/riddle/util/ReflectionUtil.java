@@ -11,22 +11,19 @@ public class ReflectionUtil {
 
     private static final String GETTER_PREFIX = "get";
 
-    public static <T> List<Object> getAllAccessibleFields(Class<T> clazz, T object) {
+    public static <T> List<Object> getAllAccessibleFields(T object) {
 	List<Object> accessibleFields = new ArrayList<>();
-	Field[] fields = clazz.getFields();
-	if (fields == null || fields.length < 1) {
-	    return accessibleFields;
-	}
+	Field[] fields = object.getClass().getFields();
 	for (Field field : fields) {
 	    try {
-		if (field.isAccessible()) {
+		if (Modifier.isPublic(field.getModifiers())) {
 		    accessibleFields.add(field.get(object));
 		}
 	    } catch (IllegalArgumentException | IllegalAccessException exception) {
 		exception.printStackTrace();
 	    }
 	}
-	List<Method> getters = getAllGetters(clazz);
+	List<Method> getters = getAllGetters(object.getClass());
 	if (getters.isEmpty()) {
 	    return accessibleFields;
 	}

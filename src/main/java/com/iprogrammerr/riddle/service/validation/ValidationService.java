@@ -1,10 +1,10 @@
 package com.iprogrammerr.riddle.service.validation;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.util.List;
 
 import com.iprogrammerr.riddle.entity.User;
 import com.iprogrammerr.riddle.exception.validation.InvalidItemException;
+import com.iprogrammerr.riddle.util.ReflectionUtil;
 import com.iprogrammerr.riddle.util.StringUtil;
 
 public class ValidationService {
@@ -26,22 +26,12 @@ public class ValidationService {
 	}
     }
 
-    public <T> void validateNotNullFieldsRule(Class<T> clazz, T object) {
-	Field[] fields = clazz.getFields();
-	Method[] methods = clazz.getMethods();
-	if (fields != null) {
-	    for (Field field : fields) {
-		try {
-		    if (field.isAccessible() && field.get(object) == null) {
-			throw new InvalidItemException(field.getName() + " is null.");
-		    }
-		} catch (IllegalArgumentException | IllegalAccessException exception) {
-		    exception.printStackTrace();
-		}
+    public <T> void validateNotNullFieldsRule(T object) {
+	List<Object> fields = ReflectionUtil.getAllAccessibleFields(object);
+	for (Object field : fields) {
+	    if (field == null) {
+		throw new InvalidItemException("Fields can not be null.");
 	    }
-	}
-	if (methods != null) {
-
 	}
     }
 }

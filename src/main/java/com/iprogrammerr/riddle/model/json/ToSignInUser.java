@@ -9,7 +9,7 @@ public class ToSignInUser {
     private String password;
 
     @JsonCreator
-    public ToSignInUser(@JsonProperty("email") String nameEmail, @JsonProperty("password") String password) {
+    public ToSignInUser(@JsonProperty("nameEmail") String nameEmail, @JsonProperty("password") String password) {
 	this.nameEmail = nameEmail;
 	this.password = password;
     }

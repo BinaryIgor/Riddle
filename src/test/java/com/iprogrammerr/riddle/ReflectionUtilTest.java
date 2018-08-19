@@ -1,5 +1,7 @@
 package com.iprogrammerr.riddle;
 
+import static org.junit.Assert.assertTrue;
+
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -12,10 +14,14 @@ public class ReflectionUtilTest {
 
     @Test
     public void getGettersTest() {
-	Activator activator = new Activator(1, "adada");
 	List<Method> getters = ReflectionUtil.getAllGetters(Activator.class);
-	for (Method getter : getters) {
-	    System.out.println(getter.getName());
-	}
+	assertTrue(getters.size() >= 2);
+    }
+
+    @Test
+    public void getAccessibleFieldsTest() {
+	Activator activator = new Activator(1, "hash");
+	List<Object> fields = ReflectionUtil.getAllAccessibleFields(activator);
+	assertTrue(fields.size() >= 2);
     }
 }

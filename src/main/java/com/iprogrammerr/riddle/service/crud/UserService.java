@@ -1,5 +1,6 @@
 package com.iprogrammerr.riddle.service.crud;
 
+import com.iprogrammerr.riddle.database.QueryBuilder;
 import com.iprogrammerr.riddle.database.QueryExecutor;
 import com.iprogrammerr.riddle.database.QueryResultToObjectConverter;
 import com.iprogrammerr.riddle.entity.User;
@@ -8,6 +9,7 @@ import com.iprogrammerr.riddle.entity.UserRole;
 public class UserService {
 
     private static final String QUERY_USER_ROLE_PREFIX = "r";
+    private static final String SQL_STRING_VALUE_TEMPLATE = "'%s'";
     private QueryExecutor queryExecutor;
 
     public UserService(QueryExecutor queryExecutor) {
@@ -27,7 +29,12 @@ public class UserService {
     }
 
     public User getUser(long id) {
-	return queryExecutor.executeSelect(getUserByIdQuery(id), getQueryToUserConverter());
+	QueryBuilder queryBuilder = new QueryBuilder();
+	queryBuilder.select("user.*", "user_role.id as rid", "user_role.name as rname").from("user")
+		.innerJoin("user_role").on("user_role_id").isEqualTo("user_role.id").where("user.id").isEqualTo(id);
+	String query = queryBuilder.build();
+	System.out.println(query);
+	return queryExecutor.executeSelect(query, getQueryToUserConverter());
     }
 
     public User getUserByName(String name) {
@@ -89,11 +96,13 @@ public class UserService {
     }
 
     private String getUserByNameQuery(String name) {
-	return getUserWithoutWhereQuery().append("where user.name = ").append(name).toString();
+	return getUserWithoutWhereQuery().append("where user.name = ")
+		.append(String.format(SQL_STRING_VALUE_TEMPLATE, name)).toString();
     }
 
     private String getUserByEmailQuery(String email) {
-	return getUserWithoutWhereQuery().append("where user.email = ").append(email).toString();
+	return getUserWithoutWhereQuery().append("where user.email = ")
+		.append(String.format(SQL_STRING_VALUE_TEMPLATE, email)).toString();
     }
 
 }

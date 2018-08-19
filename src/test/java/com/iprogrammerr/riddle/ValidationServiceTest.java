@@ -19,10 +19,10 @@ public class ValidationServiceTest {
 	validationService = new ValidationService();
     }
 
-    @Test
-    public void reflectionTest() throws IllegalArgumentException, IllegalAccessException {
+    @Test(expected = InvalidItemException.class)
+    public void reflectionTest() {
 	Activator activator = new Activator(1, null);
-	validationService.validateNotNullFieldsRule(Activator.class, activator);
+	validationService.validateNotNullFieldsRule(activator);
     }
 
     @Test

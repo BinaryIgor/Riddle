@@ -17,7 +17,7 @@ public class SecurityConfiguration {
     public static final String TOKEN_TYPE_KEY = "tokenType";
     public static final List<SecuredPath> SECURED_PATHS = new ArrayList<>();
     static {
-	SECURED_PATHS.add(new SecuredPath(UserRole.Role.PLAYER.getTranslation(), "/games/"));
+	SECURED_PATHS.add(new SecuredPath(UserRole.Role.PLAYER.getTranslation(), "/user/profile"));
     }
 
     public enum TokenType {

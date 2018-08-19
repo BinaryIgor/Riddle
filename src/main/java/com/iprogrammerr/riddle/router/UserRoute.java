@@ -50,6 +50,21 @@ public class UserRoute extends Route {
 	this.emailService = emailService;
     }
 
+    @Override
+    public void resolvePostRequest(String path, HttpServletRequest request, HttpServletResponse response) {
+	if (path.equals(SIGN_IN_PATH)) {
+	    signIn(request, response);
+	} else if (path.equals(SIGN_UP_PATH)) {
+	    signUp(request, response);
+	} else if (path.equals(REFRESH_TOKEN_PATH)) {
+	    refreshToken(request, response);
+	} else if (path.equals(ACTIVATE_PATH)) {
+	    activateUser(request, response);
+	} else {
+	    throw new NotResolvedRouteException();
+	}
+    }
+
     private void signIn(HttpServletRequest request, HttpServletResponse response) {
 	ToSignInUser toSignInUser = getBody(ToSignInUser.class, request);
 	User user = userService.getUserByNameOrEmail(toSignInUser.getNameEmail());
@@ -92,7 +107,6 @@ public class UserRoute extends Route {
 
     private void activateUser(HttpServletRequest request, HttpServletResponse response) {
 	Activator activator = getBody(Activator.class, request);
-	validationService.validateNotNullFieldsRule(Activator.class, activator);
 	User user = userService.getUser(activator.getId());
 	String userHash = encryptionService.getToSendUserHash(user);
 	if (!userHash.equals(activator.getHash())) {
@@ -106,25 +120,14 @@ public class UserRoute extends Route {
     @Override
     public void resolveGetRequest(String path, HttpServletRequest request, HttpServletResponse response) {
 	if (path.equals(PROFILE_PATH)) {
-
+	    getProfile(request, response);
 	} else {
 	    throw new NotResolvedRouteException();
 	}
     }
 
-    @Override
-    public void resolvePostRequest(String path, HttpServletRequest request, HttpServletResponse response) {
-	if (path.equals(SIGN_IN_PATH)) {
-	    signIn(request, response);
-	} else if (path.equals(SIGN_UP_PATH)) {
-	    signUp(request, response);
-	} else if (path.equals(REFRESH_TOKEN_PATH)) {
-	    refreshToken(request, response);
-	} else if (path.equals(ACTIVATE_PATH)) {
-	    activateUser(request, response);
-	} else {
-	    throw new NotResolvedRouteException();
-	}
+    private void getProfile(HttpServletRequest request, HttpServletResponse response) {
+
     }
 
 }

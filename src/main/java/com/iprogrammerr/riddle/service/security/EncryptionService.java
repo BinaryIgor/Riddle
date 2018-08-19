@@ -18,7 +18,7 @@ public class EncryptionService {
 	    digest = MessageDigest.getInstance("SHA-256");
 	} catch (NoSuchAlgorithmException exception) {
 	    exception.printStackTrace();
-	    throw new CreationException(exception);
+	    throw new CreationException(exception.getMessage());
 	}
     }
 

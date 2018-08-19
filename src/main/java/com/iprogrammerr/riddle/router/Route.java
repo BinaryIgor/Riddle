@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.iprogrammerr.riddle.exception.request.ParsingUrlException;
 import com.iprogrammerr.riddle.exception.request.RequestParameterException;
 import com.iprogrammerr.riddle.exception.request.WrongRequestBodyException;
 import com.iprogrammerr.riddle.exception.router.NotResolvedRouteException;
@@ -42,6 +43,19 @@ public abstract class Route {
 
     public String getMainPath() {
 	return mainPath;
+    }
+
+    public <T> T getUrlLastVariable(Class<T> clazz, String url) {
+	try {
+	    String[] segmentedUrl = url.split("/");
+	    if (segmentedUrl.length < 1) {
+		throw new ParsingUrlException("Required variable not presented in url.");
+	    }
+	    return clazz.cast(segmentedUrl[segmentedUrl.length - 1]);
+	} catch (ClassCastException exception) {
+	    exception.printStackTrace();
+	    throw new ParsingUrlException("Required url variable is of wrong type");
+	}
     }
 
     protected <T> T getBody(Class<T> clazz, HttpServletRequest request) {
