@@ -4,11 +4,11 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.iprogrammerr.riddle.entity.User;
-import com.iprogrammerr.riddle.entity.UserRole;
 import com.iprogrammerr.riddle.exception.security.UnauthenticatedException;
 import com.iprogrammerr.riddle.exception.security.UnauthorizedException;
 import com.iprogrammerr.riddle.exception.validation.TokenParsingException;
+import com.iprogrammerr.riddle.model.database.User;
+import com.iprogrammerr.riddle.model.database.UserRole;
 import com.iprogrammerr.riddle.model.security.SecuredPath;
 import com.iprogrammerr.riddle.model.security.Token;
 import com.iprogrammerr.riddle.model.security.TokenData;

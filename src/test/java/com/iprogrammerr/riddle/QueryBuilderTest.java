@@ -23,7 +23,8 @@ public class QueryBuilderTest {
 
     @Test
     public void insertTest() {
-	queryBuilder.insertInto("user", "name", "email", "password").values("Igor", "ceigor94@gmail.com", "alamakota");
+	queryBuilder.insertInto("user").keys("name", "email", "password").values("Igor", "ceigor94@gmail.com",
+		"alamakota");
 	System.out.println(queryBuilder.build());
     }
 

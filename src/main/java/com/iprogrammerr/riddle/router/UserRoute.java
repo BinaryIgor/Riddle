@@ -5,14 +5,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.HttpStatus;
 
-import com.iprogrammerr.riddle.entity.User;
-import com.iprogrammerr.riddle.entity.UserRole;
 import com.iprogrammerr.riddle.exception.database.DuplicateEntryException;
+import com.iprogrammerr.riddle.exception.request.RequestParameterException;
 import com.iprogrammerr.riddle.exception.router.NotResolvedRouteException;
 import com.iprogrammerr.riddle.exception.security.UnauthenticatedException;
 import com.iprogrammerr.riddle.exception.security.UnauthorizedException;
+import com.iprogrammerr.riddle.model.database.User;
+import com.iprogrammerr.riddle.model.database.UserRole;
 import com.iprogrammerr.riddle.model.json.ToSignInUser;
 import com.iprogrammerr.riddle.model.json.ToSignUpUser;
+import com.iprogrammerr.riddle.model.json.UserProfile;
 import com.iprogrammerr.riddle.model.json.Username;
 import com.iprogrammerr.riddle.model.response.SignInResponse;
 import com.iprogrammerr.riddle.model.security.Activator;
@@ -70,7 +72,10 @@ public class UserRoute extends Route {
 	User user = userService.getUserByNameOrEmail(toSignInUser.getNameEmail());
 	String encryptedPassword = encryptionService.encrypt(toSignInUser.getPassword());
 	if (!encryptedPassword.equals(user.getPassword())) {
-	    throw new UnauthenticatedException("Invalid password.");
+	    throw UnauthenticatedException.createInvalidPasswordException();
+	}
+	if (!user.isActive()) {
+	    throw UnauthenticatedException.createNotActivatedUserException();
 	}
 	UserRole role = user.getUserRole();
 	Token accessToken = securityService.createAccessToken(user.getName(), role.getName());
@@ -89,12 +94,13 @@ public class UserRoute extends Route {
 	}
 	User user = new User(toSignUpUser.getEmail(), toSignUpUser.getName(), toSignUpUser.getPassword());
 	validationService.validateUser(user);
+	UserRole userRole = userService.getUserRoleByName(UserRole.Role.PLAYER.value);
 	user.setPassword(encryptionService.encrypt(toSignUpUser.getPassword()));
-	user.setUserRole(userService.getUserRoleByName(UserRole.Role.PLAYER.getTranslation()));
+	user.setUserRole(userRole);
 	long id = userService.createUser(user);
 	String userHash = encryptionService.getToSendUserHash(user);
 	String activatingLink = activationLinkBase + "?id=" + id + "&activate=" + userHash;
-	emailService.sendSignUpEmail(user.getEmail(), activatingLink);
+	emailService.sendSignUpEmail(toSignUpUser.getEmail(), activatingLink);
 	response.setStatus(HttpStatus.CREATED_201);
     }
 
@@ -127,7 +133,13 @@ public class UserRoute extends Route {
     }
 
     private void getProfile(HttpServletRequest request, HttpServletResponse response) {
-
+	long id = getUrlLastVariable(Long.class, request.getRequestURI());
+	if (id < 1) {
+	    throw RequestParameterException.createPositiveNumberRequiredException();
+	}
+	UserProfile userProfile = userService.getUserProfile(id);
+	setBody(userProfile, response);
+	response.setStatus(HttpStatus.OK_200);
     }
 
 }

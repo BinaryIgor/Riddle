@@ -51,11 +51,19 @@ public abstract class Route {
 	    if (segmentedUrl.length < 1) {
 		throw new ParsingUrlException("Required variable not presented in url.");
 	    }
-	    return clazz.cast(segmentedUrl[segmentedUrl.length - 1]);
+	    String valueToCast = segmentedUrl[segmentedUrl.length - 1];
+	    return castUrlVariable(clazz, valueToCast);
 	} catch (ClassCastException exception) {
 	    exception.printStackTrace();
 	    throw new ParsingUrlException("Required url variable is of wrong type");
 	}
+    }
+
+    private <T> T castUrlVariable(Class<T> clazz, String urlVariable) {
+	if (clazz.isAssignableFrom(Long.class)) {
+	    return clazz.cast(Long.parseLong(urlVariable));
+	}
+	return clazz.cast(urlVariable);
     }
 
     protected <T> T getBody(Class<T> clazz, HttpServletRequest request) {

@@ -20,8 +20,13 @@ public class QueryBuilder {
 	return this;
     }
 
-    public QueryBuilder insertInto(String table, String... columns) {
-	builder.append("insert into ").append(table).append("(").append(getCommaSeparatedString(columns)).append(") ");
+    public QueryBuilder insertInto(String table) {
+	builder.append("insert into ").append(table).append(" ");
+	return this;
+    }
+
+    public QueryBuilder keys(String... keys) {
+	builder.append("(").append(getCommaSeparatedString(keys)).append(") ");
 	return this;
     }
 
@@ -70,8 +75,8 @@ public class QueryBuilder {
 	return this;
     }
 
-    public QueryBuilder where(String vaue) {
-	builder.append("where ").append(vaue).append(" ");
+    public QueryBuilder where(String value) {
+	builder.append("where ").append(value).append(" ");
 	return this;
     }
 

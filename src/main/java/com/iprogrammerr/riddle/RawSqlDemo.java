@@ -2,7 +2,7 @@ package com.iprogrammerr.riddle;
 
 import com.iprogrammerr.riddle.database.DatabaseConnectionManager;
 import com.iprogrammerr.riddle.database.QueryExecutor;
-import com.iprogrammerr.riddle.entity.User;
+import com.iprogrammerr.riddle.model.database.User;
 import com.iprogrammerr.riddle.service.crud.UserService;
 
 public class RawSqlDemo {

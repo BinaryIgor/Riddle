@@ -1,4 +1,4 @@
-package com.iprogrammerr.riddle.entity;
+package com.iprogrammerr.riddle.model.database;
 
 public class UserRole {
 
@@ -22,22 +22,18 @@ public class UserRole {
 
 	PLAYER("player"), ADMIN("admin");
 
-	private String translation;
+	public String value;
 
-	Role(String translation) {
-	    this.translation = translation;
+	Role(String value) {
+	    this.value = value;
 	}
 
-	public String getTranslation() {
-	    return translation;
-	}
-
-	public boolean equalsByTranslation(String role) {
-	    return translation.equals(role);
+	public boolean equals(String role) {
+	    return value.equals(role);
 	}
 
 	public static boolean isAdmin(String role) {
-	    return ADMIN.translation.equals(role);
+	    return ADMIN.value.equals(role);
 	}
     }
 

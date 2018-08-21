@@ -5,8 +5,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-import com.iprogrammerr.riddle.entity.User;
 import com.iprogrammerr.riddle.exception.creation.CreationException;
+import com.iprogrammerr.riddle.model.database.User;
 
 public class EncryptionService {
 
