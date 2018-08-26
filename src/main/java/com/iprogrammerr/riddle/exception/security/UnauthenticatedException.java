@@ -1,13 +1,16 @@
 package com.iprogrammerr.riddle.exception.security;
 
-public class UnauthenticatedException extends RuntimeException {
+import com.iprogrammerr.simple.http.server.constants.ResponseCode;
+import com.iprogrammerr.simple.http.server.exception.HttpException;
+
+public class UnauthenticatedException extends HttpException {
 
     public UnauthenticatedException() {
-
+	super(ResponseCode.UNAUTHORIZED);
     }
 
     private UnauthenticatedException(String message) {
-	super(message);
+	super(ResponseCode.UNAUTHORIZED, message);
     }
 
     public static UnauthenticatedException createInvalidPasswordException() {

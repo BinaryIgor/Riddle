@@ -80,30 +80,25 @@ public class QueryBuilder {
 	return this;
     }
 
-    private QueryBuilder operatorTo(String operator, Object value) {
-	builder.append(operator).append(" ").append(toString(value)).append(" ");
+    private QueryBuilder operatorTo(String operator, Object columnOrValue, boolean column) {
+	builder.append(operator).append(" ").append(column ? columnOrValue : toString(columnOrValue)).append(" ");
 	return this;
     }
 
-    private QueryBuilder operatorTo(String operator, String column) {
-	builder.append(operator).append(" ").append(column).append(" ");
-	return this;
+    public QueryBuilder isEqualToValue(Object value) {
+	return operatorTo("=", value, false);
     }
 
-    public QueryBuilder isEqualTo(Object value) {
-	return operatorTo("=", value);
+    public QueryBuilder isEqualToColumn(String column) {
+	return operatorTo("=", column, true);
     }
 
-    public QueryBuilder isEqualTo(String column) {
-	return operatorTo("=", column);
+    public QueryBuilder isNotEqualToValue(Object value) {
+	return operatorTo("<>", value, false);
     }
 
-    public QueryBuilder isNotEqualTo(Object value) {
-	return operatorTo("<>", value);
-    }
-
-    public QueryBuilder isNotEqualTo(String column) {
-	return operatorTo("<>", column);
+    public QueryBuilder isNotEqualToColumn(String column) {
+	return operatorTo("<>", column, true);
     }
 
     public QueryBuilder like(String pattern) {

@@ -24,14 +24,15 @@ public class UserService {
     }
 
     public void activateUser(long id) {
-	queryExecutor
-		.executeUpdate(new QueryBuilder().update("user").set("active", true).where("id").isEqualTo(id).build());
+	queryExecutor.executeUpdate(
+		new QueryBuilder().update("user").set("active", true).where("id").isEqualToValue(id).build());
     }
 
     public User getUser(long id) {
 	QueryBuilder queryBuilder = new QueryBuilder();
 	queryBuilder.select("user.*", "user_role.id as rid", "user_role.name as rname").from("user")
-		.innerJoin("user_role").on("user_role_id").isEqualTo("user_role.id").where("user.id").isEqualTo(id);
+		.innerJoin("user_role").on("user_role_id").isEqualToColumn("user_role.id").where("user.id")
+		.isEqualToValue(id);
 	return queryExecutor.executeSelect(queryBuilder.build(), getQueryToUserConverter());
     }
 
@@ -46,7 +47,7 @@ public class UserService {
     // TODO unmock mocked points!
     public UserProfile getUserProfile(long id) {
 	QueryBuilder queryBuilder = new QueryBuilder();
-	queryBuilder.select("name", "email").from("user").where("id").isEqualTo(id);
+	queryBuilder.select("name", "email").from("user").where("id").isEqualToValue(id);
 	return queryExecutor.executeSelect(queryBuilder.build(), queryResult -> {
 	    return new UserProfile(queryResult.getString("email"), queryResult.getString("name"), 22);
 	});
@@ -55,11 +56,11 @@ public class UserService {
     private User getUserByEmailOrName(String emailOrName, boolean email) {
 	QueryBuilder queryBuilder = new QueryBuilder();
 	queryBuilder.select("user.*", "user_role.id as rid", "user_role.name as rname").from("user")
-		.innerJoin("user_role").on("user_role_id").isEqualTo("user_role.id");
+		.innerJoin("user_role").on("user_role_id").isEqualToColumn("user_role.id");
 	if (email) {
-	    queryBuilder.where("user.email").isEqualTo(emailOrName);
+	    queryBuilder.where("user.email").isEqualToValue(emailOrName);
 	} else {
-	    queryBuilder.where("user.name").isEqualTo(emailOrName);
+	    queryBuilder.where("user.name").isEqualToValue(emailOrName);
 	}
 	return queryExecutor.executeSelect(queryBuilder.build(), getQueryToUserConverter());
     }
@@ -73,7 +74,7 @@ public class UserService {
 
     public UserRole getUserRoleByName(String name) {
 	QueryBuilder queryBuilder = new QueryBuilder();
-	queryBuilder.select("*").from("user_role").where("name").isEqualTo(name);
+	queryBuilder.select("*").from("user_role").where("name").isEqualToValue(name);
 	return queryExecutor.executeSelect(queryBuilder.build(), resultSet -> {
 	    return new UserRole(resultSet.getLong("id"), resultSet.getString("name"));
 	});
@@ -81,14 +82,15 @@ public class UserService {
 
     public boolean existsByEmail(String email) {
 	return queryExecutor.executeSelect(
-		new QueryBuilder().select("id").from("user").where("email").isEqualTo(email).build(), resultSet -> {
+		new QueryBuilder().select("id").from("user").where("email").isEqualToColumn(email).build(),
+		resultSet -> {
 		    return resultSet.getLong("id") > 0;
 		});
     }
 
     public boolean existsByName(String name) {
 	return queryExecutor.executeSelect(
-		new QueryBuilder().select("id").from("user").where("name").isEqualTo(name).build(), resultSet -> {
+		new QueryBuilder().select("id").from("user").where("name").isEqualToColumn(name).build(), resultSet -> {
 		    return resultSet.getLong("id") > 0;
 		});
     }

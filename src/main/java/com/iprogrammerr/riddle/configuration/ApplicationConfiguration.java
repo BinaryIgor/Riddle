@@ -4,8 +4,6 @@ import java.util.Properties;
 
 public class ApplicationConfiguration {
 
-    private String serverContextPath;
-    private int serverPort;
     private String userActivationLinkBase;
     private String adminEmail;
     private String adminEmailPassword;
@@ -16,8 +14,6 @@ public class ApplicationConfiguration {
     private String jdbcUrl;
 
     public ApplicationConfiguration(Properties properties) {
-	serverContextPath = properties.getProperty("server.context-path");
-	serverPort = Integer.parseInt(properties.getProperty("server.port"));
 	userActivationLinkBase = properties.getProperty("user.activation-link-base");
 	adminEmail = properties.getProperty("admin.email");
 	adminEmailPassword = properties.getProperty("admin.email.password");
@@ -26,14 +22,6 @@ public class ApplicationConfiguration {
 	databaseUsername = properties.getProperty("database.username");
 	databasePassword = properties.getProperty("database.password");
 	jdbcUrl = properties.getProperty("jdbc-url");
-    }
-
-    public String getServerContextPath() {
-	return serverContextPath;
-    }
-
-    public int getServerPort() {
-	return serverPort;
     }
 
     public String getUserActivationLinkBase() {

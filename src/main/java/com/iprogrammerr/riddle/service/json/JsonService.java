@@ -25,6 +25,11 @@ public class JsonService {
 	return object;
     }
 
+    public <T> T deserialize(Class<T> clazz, byte[] data) throws IOException {
+	T object = objectMapper.readValue(data, clazz);
+	return object;
+    }
+
     public <T> String serialize(T object) throws IOException {
 	return objectMapper.writeValueAsString(object);
     }

@@ -2,18 +2,13 @@ package com.iprogrammerr.riddle.service.security;
 
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.iprogrammerr.riddle.exception.security.UnauthenticatedException;
-import com.iprogrammerr.riddle.exception.security.UnauthorizedException;
+import com.iprogrammerr.riddle.configuration.SecurityConfiguration;
+import com.iprogrammerr.riddle.configuration.SecurityConfiguration.TokenType;
 import com.iprogrammerr.riddle.exception.validation.TokenParsingException;
 import com.iprogrammerr.riddle.model.database.User;
 import com.iprogrammerr.riddle.model.database.UserRole;
-import com.iprogrammerr.riddle.model.security.SecuredPath;
 import com.iprogrammerr.riddle.model.security.Token;
 import com.iprogrammerr.riddle.model.security.TokenData;
-import com.iprogrammerr.riddle.router.security.SecurityConfiguration;
-import com.iprogrammerr.riddle.router.security.SecurityConfiguration.TokenType;
 import com.iprogrammerr.riddle.service.crud.UserService;
 import com.iprogrammerr.riddle.util.StringUtil;
 
@@ -76,32 +71,6 @@ public class SecurityService {
 	    throw new TokenParsingException();
 	}
 	return new TokenData(username, role, tokenType);
-    }
-
-    public void check(HttpServletRequest request) {
-	SecuredPath securedPath = getCurrentPath(request.getRequestURI());
-	if (securedPath == null) {
-	    return;
-	}
-	String token = request.getHeader(SecurityConfiguration.AUTHORIZATION_HEADER);
-	if (token == null || token.isEmpty()) {
-	    throw new UnauthenticatedException();
-	}
-	token = token.replace(SecurityConfiguration.TOKEN_PREFIX, "");
-	TokenData tokenData = parseToken(token);
-	User user = userService.getUserByName(tokenData.getUsername());
-	if (!user.getUserRole().getName().equals(tokenData.getRole())) {
-	    throw new UnauthorizedException();
-	}
-    }
-
-    private SecuredPath getCurrentPath(String requestUrl) {
-	for (SecuredPath path : SecurityConfiguration.SECURED_PATHS) {
-	    if (requestUrl.contains(path.getPath())) {
-		return path;
-	    }
-	}
-	return null;
     }
 
 }

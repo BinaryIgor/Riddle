@@ -39,14 +39,9 @@
 			<version>1.6.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>9.4.3.v20170317</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<version>9.4.3.v20170317</version>
+			<groupId>com.iprogrammerr</groupId>
+  			<artifactId>simple-http-server</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>

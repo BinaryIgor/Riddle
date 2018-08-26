@@ -17,7 +17,8 @@ public class QueryBuilderTest {
     @Test
     public void selectTest() {
 	queryBuilder.select("user.*", "user_role.id as rid", "user_role.name as rname").from("user")
-		.innerJoin("user_role").on("user.user_role_id").isEqualTo("user_role.id").where("id").isEqualTo(1);
+		.innerJoin("user_role").on("user.user_role_id").isEqualToColumn("user_role.id").where("id")
+		.isEqualToValue(1);
 	System.out.println(queryBuilder.build());
     }
 
@@ -31,7 +32,7 @@ public class QueryBuilderTest {
     @Test
     public void updateTest() {
 	queryBuilder.update("user").set("name", "igor", "active", true, "password", "dupak", "email", "szczupak")
-		.where("user").isEqualTo(1);
+		.where("user").isEqualToValue(1);
 	System.out.println(queryBuilder.build());
     }
 
@@ -43,8 +44,9 @@ public class QueryBuilderTest {
 
     @Test
     public void joinTest() {
-	queryBuilder.select("*").from("user").fullJoin("user_role").on("user.user_role_id").isEqualTo("user_role.id")
-		.where("user.id").isEqualTo(1);
+	queryBuilder.select("*").from("user").fullJoin("user_role").on("user.user_role_id")
+		.isEqualToColumn("user_role.id").where("user.name").isEqualToValue("majster");
 	System.out.println(queryBuilder.build());
     }
+
 }

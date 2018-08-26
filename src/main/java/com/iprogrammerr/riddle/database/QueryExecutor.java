@@ -20,6 +20,7 @@ public class QueryExecutor {
 
     public <T> T executeSelect(String sql, QueryResultToObjectConverter<T> converter) {
 	try (Connection connection = connectionManager.getConnection()) {
+	    System.out.println(sql);
 	    Statement statement = connection.createStatement();
 	    ResultSet resultSet = statement.executeQuery(sql);
 	    resultSet.next();
