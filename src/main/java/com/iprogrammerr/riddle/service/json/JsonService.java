@@ -1,10 +1,10 @@
 package com.iprogrammerr.riddle.service.json;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.iprogrammerr.riddle.exception.creation.JsonParsingException;
 
 public class JsonService {
 
@@ -15,22 +15,31 @@ public class JsonService {
 	objectMapper.enable(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES);
     }
 
-    public <T> T deserialize(Class<T> clazz, String json) throws IOException {
-	T object = objectMapper.readValue(json, clazz);
-	return object;
+    public <T> T deserialize(Class<T> clazz, String json) {
+	try {
+	    return objectMapper.readValue(json, clazz);
+	} catch (IOException exception) {
+	    exception.printStackTrace();
+	    throw new JsonParsingException(exception);
+	}
     }
 
-    public <T> T deserialize(Class<T> clazz, InputStream inputStream) throws IOException {
-	T object = objectMapper.readValue(inputStream, clazz);
-	return object;
+    public <T> T deserialize(Class<T> clazz, byte[] bytes) {
+	try {
+	    return objectMapper.readValue(bytes, clazz);
+	} catch (IOException exception) {
+	    exception.printStackTrace();
+	    throw new JsonParsingException(exception);
+	}
     }
 
-    public <T> T deserialize(Class<T> clazz, byte[] data) throws IOException {
-	T object = objectMapper.readValue(data, clazz);
-	return object;
+    public <T> String serialize(T object) {
+	try {
+	    return objectMapper.writeValueAsString(object);
+	} catch (IOException exception) {
+	    exception.printStackTrace();
+	    throw new JsonParsingException(exception);
+	}
     }
 
-    public <T> String serialize(T object) throws IOException {
-	return objectMapper.writeValueAsString(object);
-    }
 }

@@ -59,6 +59,16 @@ public class SecurityService {
 	return createToken(user.getName(), role.getName(), TokenType.ACCESS_TOKEN);
     }
 
+    public String getUsernameFromToken(String token) {
+	Claims claims = Jwts.parser().setSigningKey(SecurityConfiguration.SECRET.getBytes()).parseClaimsJws(token)
+		.getBody();
+	String username = claims.getSubject();
+	if (username == null) {
+	    throw new TokenParsingException();
+	}
+	return username;
+    }
+
     private TokenData parseToken(String token) {
 	Claims claims = Jwts.parser().setSigningKey(SecurityConfiguration.SECRET.getBytes()).parseClaimsJws(token)
 		.getBody();
@@ -71,6 +81,24 @@ public class SecurityService {
 	    throw new TokenParsingException();
 	}
 	return new TokenData(username, role, tokenType);
+    }
+
+    public boolean validateToken(String token) {
+	Claims claims = Jwts.parser().setSigningKey(SecurityConfiguration.SECRET.getBytes()).parseClaimsJws(token)
+		.getBody();
+	String username = claims.getSubject();
+	if (StringUtil.isNullOrEmpty(username)) {
+	    return false;
+	}
+	String role = claims.get(SecurityConfiguration.TOKEN_ROLE_CLAIM, String.class);
+	if (StringUtil.isNullOrEmpty(role)) {
+	    return false;
+	}
+	String tokenType = claims.get(SecurityConfiguration.TOKEN_TYPE_KEY, String.class);
+	if (StringUtil.isNullOrEmpty(tokenType)) {
+	    return false;
+	}
+	return true;
     }
 
 }

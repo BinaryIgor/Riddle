@@ -40,7 +40,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.iprogrammerr</groupId>
-  			<artifactId>simple-http-server</artifactId>
+  			<artifactId>bright-server</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>

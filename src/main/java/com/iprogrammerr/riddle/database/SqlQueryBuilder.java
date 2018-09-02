@@ -1,36 +1,36 @@
 package com.iprogrammerr.riddle.database;
 
-import com.iprogrammerr.riddle.exception.database.QueryException;
+import com.iprogrammerr.riddle.exception.database.QueryCreatorException;
 
-public class QueryBuilder {
+public class SqlQueryBuilder {
 
     private final StringBuilder builder;
 
-    public QueryBuilder() {
+    public SqlQueryBuilder() {
 	builder = new StringBuilder();
     }
 
-    public QueryBuilder select(String... columns) {
+    public SqlQueryBuilder select(String... columns) {
 	builder.append("select ").append(getCommaSeparatedString(columns)).append(" ");
 	return this;
     }
 
-    public QueryBuilder from(String... tables) {
+    public SqlQueryBuilder from(String... tables) {
 	builder.append("from ").append(getCommaSeparatedString(tables)).append(" ");
 	return this;
     }
 
-    public QueryBuilder insertInto(String table) {
+    public SqlQueryBuilder insertInto(String table) {
 	builder.append("insert into ").append(table).append(" ");
 	return this;
     }
 
-    public QueryBuilder keys(String... keys) {
+    public SqlQueryBuilder keys(String... keys) {
 	builder.append("(").append(getCommaSeparatedString(keys)).append(") ");
 	return this;
     }
 
-    public QueryBuilder values(Object... values) {
+    public SqlQueryBuilder values(Object... values) {
 	builder.append("values(");
 	if (values.length == 0) {
 	    builder.append(toString(values[0]));
@@ -46,20 +46,20 @@ public class QueryBuilder {
 	return this;
     }
 
-    public QueryBuilder update(String table) {
+    public SqlQueryBuilder update(String table) {
 	builder.append("update ").append(table).append(" ");
 	return this;
     }
 
-    public QueryBuilder set(Object... keysValues) {
+    public SqlQueryBuilder set(Object... keysValues) {
 	if ((keysValues.length % 2) != 0) {
-	    throw QueryException.createIncorrectKeysToValuesNumber();
+	    throw new QueryCreatorException("Key values number is incorrect");
 	}
 	builder.append("set ");
 	for (int i = 0; i < keysValues.length; i += 2) {
 	    boolean string = keysValues[i].getClass().isAssignableFrom(String.class);
 	    if (!string) {
-		throw QueryException.createIncorretKeyException();
+		throw new QueryCreatorException("Every key should be a string");
 	    }
 	    builder.append((String) keysValues[i]).append("=").append(toString(keysValues[i + 1]));
 	    if (i < (keysValues.length - 2)) {
@@ -70,43 +70,43 @@ public class QueryBuilder {
 	return this;
     }
 
-    public QueryBuilder deleteFrom(String table) {
+    public SqlQueryBuilder deleteFrom(String table) {
 	builder.append("delete from ").append(table).append(" ");
 	return this;
     }
 
-    public QueryBuilder where(String value) {
+    public SqlQueryBuilder where(String value) {
 	builder.append("where ").append(value).append(" ");
 	return this;
     }
 
-    private QueryBuilder operatorTo(String operator, Object columnOrValue, boolean column) {
+    private SqlQueryBuilder operatorTo(String operator, Object columnOrValue, boolean column) {
 	builder.append(operator).append(" ").append(column ? columnOrValue : toString(columnOrValue)).append(" ");
 	return this;
     }
 
-    public QueryBuilder isEqualToValue(Object value) {
+    public SqlQueryBuilder isEqualToValue(Object value) {
 	return operatorTo("=", value, false);
     }
 
-    public QueryBuilder isEqualToColumn(String column) {
+    public SqlQueryBuilder isEqualToColumn(String column) {
 	return operatorTo("=", column, true);
     }
 
-    public QueryBuilder isNotEqualToValue(Object value) {
+    public SqlQueryBuilder isNotEqualToValue(Object value) {
 	return operatorTo("<>", value, false);
     }
 
-    public QueryBuilder isNotEqualToColumn(String column) {
+    public SqlQueryBuilder isNotEqualToColumn(String column) {
 	return operatorTo("<>", column, true);
     }
 
-    public QueryBuilder like(String pattern) {
+    public SqlQueryBuilder like(String pattern) {
 	builder.append("like '").append(pattern).append("' ");
 	return this;
     }
 
-    public QueryBuilder in(Object... values) {
+    public SqlQueryBuilder in(Object... values) {
 	builder.append("in ");
 	boolean strings = values[0].getClass().isAssignableFrom(String.class);
 	if (values.length == 0) {
@@ -120,128 +120,128 @@ public class QueryBuilder {
 	return this;
     }
 
-    public QueryBuilder between(Object first, Object second) {
+    public SqlQueryBuilder between(Object first, Object second) {
 	builder.append("between ").append(toString(first)).append(" and ").append(toString(second)).append(" ");
 	return this;
     }
 
-    public QueryBuilder notBetween(Object first, Object second) {
+    public SqlQueryBuilder notBetween(Object first, Object second) {
 	builder.append("not between ").append(toString(first)).append(" and ").append(toString(second)).append(" ");
 	return this;
     }
 
-    public QueryBuilder and(String column) {
+    public SqlQueryBuilder and(String column) {
 	builder.append("and ").append(column).append(" ");
 	return this;
     }
 
-    public QueryBuilder or(String column) {
+    public SqlQueryBuilder or(String column) {
 	builder.append("or ").append(column).append(" ");
 	return this;
     }
 
-    public QueryBuilder innerJoin(String table) {
+    public SqlQueryBuilder innerJoin(String table) {
 	return join(JoinType.INNER, table);
     }
 
-    public QueryBuilder leftJoin(String table) {
+    public SqlQueryBuilder leftJoin(String table) {
 	return join(JoinType.LEFT, table);
     }
 
-    public QueryBuilder rightJoin(String table) {
+    public SqlQueryBuilder rightJoin(String table) {
 	return join(JoinType.RIGHT, table);
     }
 
-    public QueryBuilder fullJoin(String table) {
+    public SqlQueryBuilder fullJoin(String table) {
 	return join(JoinType.FULL, table);
     }
 
-    private QueryBuilder join(JoinType type, String table) {
+    private SqlQueryBuilder join(JoinType type, String table) {
 	builder.append(type.value).append(" join ").append(table).append(" ");
 	return this;
     }
 
-    public QueryBuilder on(String column) {
+    public SqlQueryBuilder on(String column) {
 	builder.append("on ").append(column).append(" ");
 	return this;
     }
 
-    public QueryBuilder orderBy(String... columns) {
+    public SqlQueryBuilder orderBy(String... columns) {
 	builder.append("order by ").append(getCommaSeparatedString(columns)).append(" ");
 	return this;
     }
 
-    public QueryBuilder asc() {
+    public SqlQueryBuilder asc() {
 	builder.append("asc ");
 	return this;
     }
 
-    public QueryBuilder desc() {
+    public SqlQueryBuilder desc() {
 	builder.append("desc ");
 	return this;
     }
 
-    public QueryBuilder groupBy(String... columns) {
+    public SqlQueryBuilder groupBy(String... columns) {
 	builder.append("group by ").append(getCommaSeparatedString(columns)).append(" ");
 	return this;
     }
 
-    public QueryBuilder having(String value) {
+    public SqlQueryBuilder having(String value) {
 	builder.append("having ").append(value).append(" ");
 	return this;
     }
 
-    public QueryBuilder whereExists() {
+    public SqlQueryBuilder whereExists() {
 	builder.append("where exists ");
 	return this;
     }
 
-    public QueryBuilder whereNotExists() {
+    public SqlQueryBuilder whereNotExists() {
 	builder.append("where not exists ");
 	return this;
     }
 
-    public QueryBuilder any() {
+    public SqlQueryBuilder any() {
 	builder.append("any ");
 	return this;
     }
 
-    public QueryBuilder all() {
+    public SqlQueryBuilder all() {
 	builder.append("all ");
 	return this;
     }
 
-    public QueryBuilder union() {
+    public SqlQueryBuilder union() {
 	builder.append("union ");
 	return this;
     }
 
-    public QueryBuilder unionAll() {
+    public SqlQueryBuilder unionAll() {
 	builder.append("union all ");
 	return this;
     }
 
-    public QueryBuilder min(String columnName) {
+    public SqlQueryBuilder min(String columnName) {
 	return function(FunctionType.MIN, columnName);
     }
 
-    public QueryBuilder max(String columnName) {
+    public SqlQueryBuilder max(String columnName) {
 	return function(FunctionType.MAX, columnName);
     }
 
-    public QueryBuilder count(String columnName) {
+    public SqlQueryBuilder count(String columnName) {
 	return function(FunctionType.COUNT, columnName);
     }
 
-    public QueryBuilder avg(String columnName) {
+    public SqlQueryBuilder avg(String columnName) {
 	return function(FunctionType.AVG, columnName);
     }
 
-    public QueryBuilder sum(String columnName) {
+    public SqlQueryBuilder sum(String columnName) {
 	return function(FunctionType.SUM, columnName);
     }
 
-    private QueryBuilder function(FunctionType type, String columnName) {
+    private SqlQueryBuilder function(FunctionType type, String columnName) {
 	builder.append(type.value).append("(").append(columnName).append(") ");
 	return this;
     }
@@ -267,7 +267,7 @@ public class QueryBuilder {
 	return object.toString();
     }
 
-    public QueryBuilder as(String alias) {
+    public SqlQueryBuilder as(String alias) {
 	builder.append("as ").append(alias).append(" ");
 	return this;
     }

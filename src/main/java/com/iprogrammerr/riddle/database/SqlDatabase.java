@@ -5,21 +5,23 @@ import java.sql.SQLException;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-public class DatabaseConnectionManager {
+public class SqlDatabase implements Database {
 
     private ComboPooledDataSource dataSource;
 
-    public DatabaseConnectionManager(String user, String password, String jdbcUrl) {
+    public SqlDatabase(String user, String password, String jdbcUrl) {
 	dataSource = new ComboPooledDataSource();
 	dataSource.setJdbcUrl(jdbcUrl);
 	dataSource.setUser(user);
 	dataSource.setPassword(password);
     }
 
-    public Connection getConnection() throws SQLException {
+    @Override
+    public Connection connect() throws SQLException {
 	return dataSource.getConnection();
     }
 
+    @Override
     public void close() {
 	dataSource.close();
     }

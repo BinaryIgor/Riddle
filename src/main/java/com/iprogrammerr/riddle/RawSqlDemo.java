@@ -1,7 +1,7 @@
 package com.iprogrammerr.riddle;
 
-import com.iprogrammerr.riddle.database.DatabaseConnectionManager;
-import com.iprogrammerr.riddle.database.QueryExecutor;
+import com.iprogrammerr.riddle.database.SqlDatabase;
+import com.iprogrammerr.riddle.database.SqlQueryExecutor;
 import com.iprogrammerr.riddle.model.database.User;
 import com.iprogrammerr.riddle.service.crud.UserService;
 
@@ -13,8 +13,8 @@ public class RawSqlDemo {
 	String jdbcUrl = "jdbc:mysql://localhost:3306/riddle?useSSL=false&useUnicode=true&serverTimezone=UTC";
 	try {
 	    System.out.println("Connecting to database: " + jdbcUrl);
-	    DatabaseConnectionManager connectionManager = new DatabaseConnectionManager(username, password, jdbcUrl);
-	    QueryExecutor executor = new QueryExecutor(connectionManager);
+	    SqlDatabase connectionManager = new SqlDatabase(username, password, jdbcUrl);
+	    SqlQueryExecutor executor = new SqlQueryExecutor(connectionManager);
 	    UserService userService = new UserService(executor);
 	    User user = userService.getUser(20);
 	    System.out.println(user);

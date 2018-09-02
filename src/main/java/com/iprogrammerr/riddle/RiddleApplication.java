@@ -2,20 +2,24 @@ package com.iprogrammerr.riddle;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Properties;
 
+import com.iprogrammerr.bright.server.Server;
+import com.iprogrammerr.bright.server.configuration.ServerConfiguration;
+import com.iprogrammerr.bright.server.parser.TypedUrlPatternParser;
+import com.iprogrammerr.bright.server.parser.UrlPatternParser;
 import com.iprogrammerr.riddle.configuration.ApplicationConfiguration;
 import com.iprogrammerr.riddle.controller.UserController;
-import com.iprogrammerr.riddle.database.DatabaseConnectionManager;
-import com.iprogrammerr.riddle.database.QueryExecutor;
+import com.iprogrammerr.riddle.database.SqlDatabase;
+import com.iprogrammerr.riddle.database.SqlQueryExecutor;
 import com.iprogrammerr.riddle.service.crud.UserService;
 import com.iprogrammerr.riddle.service.email.EmailService;
 import com.iprogrammerr.riddle.service.json.JsonService;
 import com.iprogrammerr.riddle.service.security.EncryptionService;
 import com.iprogrammerr.riddle.service.security.SecurityService;
 import com.iprogrammerr.riddle.service.validation.ValidationService;
-import com.iprogrammerr.simple.http.server.Server;
-import com.iprogrammerr.simple.http.server.configuration.ServerConfiguration;
+
 
 public class RiddleApplication {
 
@@ -23,11 +27,12 @@ public class RiddleApplication {
     public static void main(String[] args) throws Exception {
 	ApplicationConfiguration applicationConfiguration = getApplicationConfiguration();
 
-	DatabaseConnectionManager connectionManager = new DatabaseConnectionManager(
+	SqlDatabase connectionManager = new SqlDatabase(
 		applicationConfiguration.getDatabaseUsername(), applicationConfiguration.getDatabasePassword(),
 		applicationConfiguration.getJdbcUrl());
-	QueryExecutor executor = new QueryExecutor(connectionManager);
-
+	SqlQueryExecutor executor = new SqlQueryExecutor(connectionManager);
+	UrlPatternParser urlPatternParser = new TypedUrlPatternParser();
+	
 	UserService userService = new UserService(executor);
 	ValidationService validationService = new ValidationService();
 	JsonService jsonService = new JsonService();
@@ -38,14 +43,14 @@ public class RiddleApplication {
 	EncryptionService encryptionService = new EncryptionService();
 
 	UserController userController = new UserController(applicationConfiguration.getUserActivationLinkBase(),
-		userService, validationService, securityService, encryptionService, emailService, jsonService);
+		urlPatternParser, userService, validationService, securityService, encryptionService, emailService, jsonService);
 
-	Server server = new Server(getServerConfiguration(), userController.getRequestResolvers());
-	server.start();
+	Server server = new Server(getServerConfiguration(), userController.createRequestResolvers(), new ArrayList<>());
 	Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 	    connectionManager.close();
 	    server.stop();
 	}));
+	server.start();
     }
 
     private static ApplicationConfiguration getApplicationConfiguration() throws IOException {

@@ -2,11 +2,10 @@ package com.iprogrammerr.riddle;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-
 import org.junit.Before;
 import org.junit.Test;
 
+import com.iprogrammerr.riddle.exception.creation.JsonParsingException;
 import com.iprogrammerr.riddle.model.security.Activator;
 import com.iprogrammerr.riddle.service.json.JsonService;
 
@@ -25,7 +24,7 @@ public class JsonServiceTest {
 	boolean exceptionThrown = false;
 	try {
 	    Activator activator = jsonService.deserialize(Activator.class, json);
-	} catch (IOException exception) {
+	} catch (JsonParsingException exception) {
 	    exceptionThrown = true;
 	}
 	assertTrue(exceptionThrown);

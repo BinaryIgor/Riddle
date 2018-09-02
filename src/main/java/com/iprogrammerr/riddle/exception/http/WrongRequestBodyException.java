@@ -1,7 +1,7 @@
 package com.iprogrammerr.riddle.exception.http;
 
-import com.iprogrammerr.simple.http.server.constants.ResponseCode;
-import com.iprogrammerr.simple.http.server.exception.HttpException;
+import com.iprogrammerr.bright.server.constants.ResponseCode;
+import com.iprogrammerr.bright.server.exception.HttpException;
 
 public class WrongRequestBodyException extends HttpException {
 
