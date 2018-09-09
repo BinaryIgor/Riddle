@@ -1,8 +1,8 @@
 package com.iprogrammerr.riddle.service.crud;
 
 import com.iprogrammerr.riddle.database.SqlQueryBuilder;
-import com.iprogrammerr.riddle.database.SqlQueryExecutor;
-import com.iprogrammerr.riddle.database.QueryResultToObjectConverter;
+import com.iprogrammerr.riddle.database.SqlDatabaseSession;
+import com.iprogrammerr.riddle.database.QueryResult;
 import com.iprogrammerr.riddle.model.database.User;
 import com.iprogrammerr.riddle.model.database.UserRole;
 import com.iprogrammerr.riddle.model.json.UserProfile;
@@ -10,9 +10,9 @@ import com.iprogrammerr.riddle.model.json.UserProfile;
 public class UserService {
 
     private static final String QUERY_USER_ROLE_PREFIX = "r";
-    private SqlQueryExecutor queryExecutor;
+    private SqlDatabaseSession queryExecutor;
 
-    public UserService(SqlQueryExecutor queryExecutor) {
+    public UserService(SqlDatabaseSession queryExecutor) {
 	this.queryExecutor = queryExecutor;
     }
 
@@ -33,7 +33,7 @@ public class UserService {
 	queryBuilder.select("user.*", "user_role.id as rid", "user_role.name as rname").from("user")
 		.innerJoin("user_role").on("user_role_id").isEqualToColumn("user_role.id").where("user.id")
 		.isEqualToValue(id);
-	return queryExecutor.select(queryBuilder.build(), getQueryToUserConverter());
+	return queryExecutor.query(queryBuilder.build(), getQueryToUserConverter());
     }
 
     public User getUserByName(String name) {
@@ -70,7 +70,7 @@ public class UserService {
 	} else {
 	    queryBuilder.where("user.name").isEqualToValue(emailOrName);
 	}
-	return queryExecutor.select(queryBuilder.build(), getQueryToUserConverter());
+	return queryExecutor.query(queryBuilder.build(), getQueryToUserConverter());
     }
 
     public User getUserByNameOrEmail(String nameOrEmail) {
@@ -103,7 +103,7 @@ public class UserService {
 		});
     }
 
-    private QueryResultToObjectConverter<User> getQueryToUserConverter() {
+    private QueryResult<User> getQueryToUserConverter() {
 	return (resultSet) -> {
 	    UserRole userRole = new UserRole(resultSet.getLong(QUERY_USER_ROLE_PREFIX + "id"),
 		    resultSet.getString(QUERY_USER_ROLE_PREFIX + "name"));

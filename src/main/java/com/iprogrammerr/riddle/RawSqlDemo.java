@@ -1,9 +1,18 @@
 package com.iprogrammerr.riddle;
 
+import java.util.Iterator;
+
+import com.iprogrammerr.bright.server.model.StringObject;
+import com.iprogrammerr.riddle.database.Database;
+import com.iprogrammerr.riddle.database.DatabaseSession;
+import com.iprogrammerr.riddle.database.QueryTemplate;
 import com.iprogrammerr.riddle.database.SqlDatabase;
-import com.iprogrammerr.riddle.database.SqlQueryExecutor;
+import com.iprogrammerr.riddle.database.SqlDatabaseSession;
+import com.iprogrammerr.riddle.database.SqlQueryTemplate;
+import com.iprogrammerr.riddle.model.database.DatabaseUser;
+import com.iprogrammerr.riddle.model.database.DatabaseUsers;
 import com.iprogrammerr.riddle.model.database.User;
-import com.iprogrammerr.riddle.service.crud.UserService;
+import com.iprogrammerr.riddle.model.database.Users;
 
 public class RawSqlDemo {
 
@@ -13,11 +22,20 @@ public class RawSqlDemo {
 	String jdbcUrl = "jdbc:mysql://localhost:3306/riddle?useSSL=false&useUnicode=true&serverTimezone=UTC";
 	try {
 	    System.out.println("Connecting to database: " + jdbcUrl);
-	    SqlDatabase connectionManager = new SqlDatabase(username, password, jdbcUrl);
-	    SqlQueryExecutor executor = new SqlQueryExecutor(connectionManager);
-	    UserService userService = new UserService(executor);
-	    User user = userService.getUser(20);
-	    System.out.println(user);
+	    Database database = new SqlDatabase(username, password, jdbcUrl);
+	    DatabaseSession session = new SqlDatabaseSession(database);
+	    QueryTemplate queryTemplate = new SqlQueryTemplate();
+	    User user = new DatabaseUser(20, session, queryTemplate);
+	    System.out.println("User name = " + user.name());
+	    System.out.println(user.toString());
+	    Users users = new DatabaseUsers(session, queryTemplate);
+	    Iterator<User> cachedUsers = users.all().iterator();
+	    while (cachedUsers.hasNext()) {
+		System.out.println(cachedUsers.next().email());
+	    }
+	    user.update(new StringObject("name", user.name() + "I"));
+	    System.out.println("Updated name = " + user.name());
+
 	} catch (Exception exception) {
 	    exception.printStackTrace();
 	}

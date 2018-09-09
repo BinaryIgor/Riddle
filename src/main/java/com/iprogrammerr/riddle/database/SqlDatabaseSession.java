@@ -5,32 +5,29 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import com.iprogrammerr.riddle.exception.creation.CreationException;
-import com.iprogrammerr.riddle.exception.database.DeleteException;
-import com.iprogrammerr.riddle.exception.database.NoResultException;
-import com.iprogrammerr.riddle.exception.database.UpdateException;
-
-public class SqlQueryExecutor implements QueryExecutor<Long>{
+public class SqlDatabaseSession implements DatabaseSession {
 
     private Database database;
 
-    public SqlQueryExecutor(Database database) {
+    public SqlDatabaseSession(Database database) {
 	this.database = database;
     }
 
-    public <T> T select(String sql, QueryResultToObjectConverter<T> converter) {
+    @Override
+    public <T> T select(String sql, QueryResultMapping<T> mapping) throws Exception {
 	try (Connection connection = database.connect()) {
 	    System.out.println(sql);
 	    Statement statement = connection.createStatement();
 	    ResultSet resultSet = statement.executeQuery(sql);
 	    resultSet.next();
-	    return converter.convert(resultSet);
+	    return mapping.map(resultSet);
 	} catch (Exception exception) {
-	    throw new NoResultException(exception);
+	    throw exception;
 	}
     }
 
-    public Long create(String sql) {
+    @Override
+    public long create(String sql) throws Exception {
 	try (Connection connection = database.connect()) {
 	    PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 	    preparedStatement.executeUpdate();
@@ -38,28 +35,26 @@ public class SqlQueryExecutor implements QueryExecutor<Long>{
 	    resultSet.next();
 	    return resultSet.getLong(1);
 	} catch (Exception exception) {
-	    throw new CreationException(exception.getMessage());
+	    throw exception;
 	}
     }
 
-    public void update(String sql) {
+    @Override
+    public void update(String sql) throws Exception {
 	modyfing(sql, ExecutionMode.UPDATE);
     }
 
-    public void delete(String sql) {
+    @Override
+    public void delete(String sql) throws Exception {
 	modyfing(sql, ExecutionMode.DELETE);
     }
 
-    private void modyfing(String sql, ExecutionMode mode) {
+    private void modyfing(String sql, ExecutionMode mode) throws Exception {
 	try (Connection connection = database.connect()) {
 	    Statement statement = connection.createStatement();
 	    statement.executeUpdate(sql);
 	} catch (Exception exception) {
-	    exception.printStackTrace();
-	    if (mode.equals(ExecutionMode.UPDATE)) {
-		throw new UpdateException(exception.getMessage());
-	    }
-	    throw new DeleteException(exception.getMessage());
+	    throw exception;
 	}
     }
 

@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.iprogrammerr.bright.server.constants.RequestMethod;
 import com.iprogrammerr.bright.server.constants.ResponseCode;
-import com.iprogrammerr.bright.server.model.ResolvedRequest;
-import com.iprogrammerr.bright.server.parser.UrlPatternParser;
-import com.iprogrammerr.bright.server.resolver.RequestResolver;
+import com.iprogrammerr.bright.server.pattern.UrlPattern;
+import com.iprogrammerr.bright.server.request.ResolvedRequest;
+import com.iprogrammerr.bright.server.respondent.HttpRespondent;
 import com.iprogrammerr.bright.server.response.EmptyResponse;
 import com.iprogrammerr.bright.server.response.JsonResponse;
 import com.iprogrammerr.bright.server.response.Response;
@@ -44,9 +44,9 @@ public class UserController implements Controller {
     private EncryptionService encryptionService;
     private EmailService emailService;
     private JsonService jsonService;
-    private List<RequestResolver> requestResolvers;
+    private List<HttpRespondent> requestResolvers;
 
-    public UserController(String activationLinkBase, UrlPatternParser urlPatternParser, UserService userService, ValidationService validationService,
+    public UserController(String activationLinkBase, UrlPattern urlPatternParser, UserService userService, ValidationService validationService,
 	    SecurityService securityService, EncryptionService encryptionService, EmailService emailService,
 	    JsonService jsonService) {
 	this.activationLinkBase = activationLinkBase;
@@ -60,17 +60,17 @@ public class UserController implements Controller {
 	createRequestResolvers(urlPatternParser);
     }
 
-    private void createRequestResolvers(UrlPatternParser urlPatternParser) {
-	requestResolvers.add(new RequestResolver(MAIN_PATH + "/sign-in", RequestMethod.POST, urlPatternParser,this::signIn));
-	requestResolvers.add(new RequestResolver(MAIN_PATH + "/sign-up", RequestMethod.POST, this::signUp));
-	requestResolvers.add(new RequestResolver(MAIN_PATH + "/token-refresh", RequestMethod.POST, this::refreshToken));
-	requestResolvers.add(new RequestResolver(MAIN_PATH + "/activate", RequestMethod.POST, this::activateUser));
-	requestResolvers.add(new RequestResolver(MAIN_PATH + "/profile/{id:int}", RequestMethod.GET, this::getProfile));
-	requestResolvers.add(new RequestResolver(MAIN_PATH + "/profile", RequestMethod.GET, this::getProfileByToken));
+    private void createRequestResolvers(UrlPattern urlPatternParser) {
+	requestResolvers.add(new HttpRespondent(MAIN_PATH + "/sign-in", RequestMethod.POST, urlPatternParser,this::signIn));
+	requestResolvers.add(new HttpRespondent(MAIN_PATH + "/sign-up", RequestMethod.POST, this::signUp));
+	requestResolvers.add(new HttpRespondent(MAIN_PATH + "/token-refresh", RequestMethod.POST, this::refreshToken));
+	requestResolvers.add(new HttpRespondent(MAIN_PATH + "/activate", RequestMethod.POST, this::activateUser));
+	requestResolvers.add(new HttpRespondent(MAIN_PATH + "/profile/{id:int}", RequestMethod.GET, this::getProfile));
+	requestResolvers.add(new HttpRespondent(MAIN_PATH + "/profile", RequestMethod.GET, this::getProfileByToken));
     }
 
     private Response signIn(ResolvedRequest request) {
-	ToSignInUser toSignInUser = jsonService.deserialize(ToSignInUser.class, request.getBody());
+	ToSignInUser toSignInUser = jsonService.deserialize(ToSignInUser.class, request.body());
 	try {
 	    User user = userService.getUserByNameOrEmail(toSignInUser.getNameEmail());
 	    String encryptedPassword = encryptionService.encrypt(toSignInUser.getPassword());
@@ -167,7 +167,7 @@ public class UserController implements Controller {
     }
 
     @Override
-    public List<RequestResolver> createRequestResolvers() {
+    public List<HttpRespondent> createRequestResolvers() {
 	return requestResolvers;
     }
 

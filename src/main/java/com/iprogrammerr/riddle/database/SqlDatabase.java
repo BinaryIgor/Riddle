@@ -1,7 +1,6 @@
 package com.iprogrammerr.riddle.database;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -17,7 +16,7 @@ public class SqlDatabase implements Database {
     }
 
     @Override
-    public Connection connect() throws SQLException {
+    public Connection connect() throws Exception {
 	return dataSource.getConnection();
     }
 
