@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.iprogrammerr.riddle.database.SqlQueryTemplate;
-import com.iprogrammerr.riddle.model.database.DatabaseTable;
+import com.iprogrammerr.riddle.model.database.DatabaseRecord;
 
 public class SqlQueryTemplateTest {
 
@@ -36,7 +36,7 @@ public class SqlQueryTemplateTest {
 	String email = "ceigor94@gmail.com";
 	String password = "ig15dada";
 	String query = queryTemplate
-		.insert(new DatabaseTable("user").put("name", name).put("email", email).put("password", password));
+		.insert(new DatabaseRecord("user").put("name", name).put("email", email).put("password", password));
 	System.out.println(query);
 	assertTrue(query.indexOf(name) > 0);
 	assertTrue(query.indexOf(email) > 0);
@@ -50,7 +50,7 @@ public class SqlQueryTemplateTest {
 	String password = "szczupak";
 	String email = "szczupak@gmail.com";
 	Long id = 2L;
-	String query = this.queryTemplate.update(new DatabaseTable("user").put("name", name).put("active", active)
+	String query = this.queryTemplate.update(new DatabaseRecord("user").put("name", name).put("active", active)
 		.put("password", password).put("email", email), "id = ?", id);
 	System.out.println(query);
 	assertTrue(query.indexOf(name) > 0);

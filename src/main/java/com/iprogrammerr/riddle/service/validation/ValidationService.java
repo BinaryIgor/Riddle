@@ -3,7 +3,7 @@ package com.iprogrammerr.riddle.service.validation;
 import java.util.List;
 
 import com.iprogrammerr.riddle.exception.validation.InvalidItemException;
-import com.iprogrammerr.riddle.model.database.User;
+import com.iprogrammerr.riddle.user.User;
 import com.iprogrammerr.riddle.util.ReflectionUtil;
 import com.iprogrammerr.riddle.util.StringUtil;
 

@@ -9,12 +9,23 @@ import java.util.Properties;
 import com.iprogrammerr.bright.server.Server;
 import com.iprogrammerr.bright.server.configuration.BrightServerConfiguration;
 import com.iprogrammerr.bright.server.filter.ConditionalRequestFilter;
+import com.iprogrammerr.bright.server.method.GetMethod;
+import com.iprogrammerr.bright.server.method.PostMethod;
+import com.iprogrammerr.bright.server.method.RequestMethod;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
+import com.iprogrammerr.bright.server.respondent.HttpRespondent;
 import com.iprogrammerr.riddle.configuration.ApplicationConfiguration;
 import com.iprogrammerr.riddle.database.Database;
 import com.iprogrammerr.riddle.database.DatabaseSession;
+import com.iprogrammerr.riddle.database.QueryTemplate;
 import com.iprogrammerr.riddle.database.SqlDatabase;
 import com.iprogrammerr.riddle.database.SqlDatabaseSession;
+import com.iprogrammerr.riddle.database.SqlQueryTemplate;
+import com.iprogrammerr.riddle.respondent.user.SignInRespondent;
+import com.iprogrammerr.riddle.security.Encryption;
+import com.iprogrammerr.riddle.security.ShaEncryption;
+import com.iprogrammerr.riddle.user.DatabaseUsers;
+import com.iprogrammerr.riddle.user.Users;
 
 public class RiddleApplication {
 
@@ -25,8 +36,18 @@ public class RiddleApplication {
 	Database database = new SqlDatabase(applicationConfiguration.getDatabaseUsername(),
 		applicationConfiguration.getDatabasePassword(), applicationConfiguration.getJdbcUrl());
 	DatabaseSession session = new SqlDatabaseSession(database);
+	QueryTemplate queryTemplate = new SqlQueryTemplate();
 
+	RequestMethod get = new GetMethod();
+	RequestMethod post = new PostMethod();
+
+	Users users = new DatabaseUsers(session, queryTemplate);
+	Encryption encryption = new ShaEncryption();
 	List<ConditionalRespondent> respondents = new ArrayList<>();
+	ConditionalRespondent signInRespondent = new HttpRespondent("user/sign-in", post,
+		new SignInRespondent(users, encryption));
+	respondents.add(signInRespondent);
+
 	List<ConditionalRequestFilter> filters = new ArrayList<>();
 
 	Server server = new Server(serverConfiguration(), respondents, filters);

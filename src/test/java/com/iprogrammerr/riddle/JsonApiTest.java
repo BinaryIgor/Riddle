@@ -3,6 +3,9 @@ package com.iprogrammerr.riddle;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -26,5 +29,16 @@ public class JsonApiTest {
 	    boolean active = jsonObject.optBoolean("active", false);
 	    assertFalse(active);
 	}
+    }
+
+    @Test
+    public void map() {
+	JSONObject jsonObject = new JSONObject();
+	jsonObject.put("name", "igor");
+	Map<String, Object> map = new HashMap<>();
+	map.put("value", "dadadadsc");
+	map.put("true", true);
+	jsonObject.put("secret", map);
+	System.out.println(jsonObject.toString());
     }
 }

@@ -5,11 +5,10 @@ import java.util.Date;
 import com.iprogrammerr.riddle.configuration.SecurityConfiguration;
 import com.iprogrammerr.riddle.configuration.SecurityConfiguration.TokenType;
 import com.iprogrammerr.riddle.exception.validation.TokenParsingException;
-import com.iprogrammerr.riddle.model.database.User;
-import com.iprogrammerr.riddle.model.database.UserRole;
-import com.iprogrammerr.riddle.model.security.Token;
 import com.iprogrammerr.riddle.model.security.TokenData;
 import com.iprogrammerr.riddle.service.crud.UserService;
+import com.iprogrammerr.riddle.user.User;
+import com.iprogrammerr.riddle.user.UsersRoles;
 import com.iprogrammerr.riddle.util.StringUtil;
 
 import io.jsonwebtoken.Claims;
@@ -52,7 +51,7 @@ public class SecurityService {
 	    throw new TokenParsingException("Wrong token type");
 	}
 	User user = userService.getUserByName(tokenData.getUsername());
-	UserRole role = user.getUserRole();
+	UsersRoles role = user.getUserRole();
 	if (!tokenData.getRole().equals(role.getName())) {
 	    throw new TokenParsingException("Wrong user role.");
 	}

@@ -3,36 +3,27 @@ package com.iprogrammerr.riddle.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.iprogrammerr.bright.server.constants.RequestMethod;
 import com.iprogrammerr.bright.server.constants.ResponseCode;
+import com.iprogrammerr.bright.server.method.RequestMethod;
 import com.iprogrammerr.bright.server.pattern.UrlPattern;
-import com.iprogrammerr.bright.server.request.ResolvedRequest;
 import com.iprogrammerr.bright.server.respondent.HttpRespondent;
-import com.iprogrammerr.bright.server.response.EmptyResponse;
-import com.iprogrammerr.bright.server.response.JsonResponse;
 import com.iprogrammerr.bright.server.response.Response;
 import com.iprogrammerr.riddle.configuration.SecurityConfiguration;
 import com.iprogrammerr.riddle.exception.database.NoResultException;
-import com.iprogrammerr.riddle.exception.http.DuplicateEntryHttpException;
 import com.iprogrammerr.riddle.exception.http.RequestParameterException;
 import com.iprogrammerr.riddle.exception.security.UnauthenticatedException;
 import com.iprogrammerr.riddle.exception.security.UnauthorizedException;
 import com.iprogrammerr.riddle.exception.validation.TokenParsingException;
-import com.iprogrammerr.riddle.model.database.User;
-import com.iprogrammerr.riddle.model.database.UserRole;
-import com.iprogrammerr.riddle.model.json.ToSignInUser;
-import com.iprogrammerr.riddle.model.json.ToSignUpUser;
-import com.iprogrammerr.riddle.model.json.UserProfile;
-import com.iprogrammerr.riddle.model.json.Username;
-import com.iprogrammerr.riddle.model.response.SignInResponse;
+import com.iprogrammerr.riddle.model.UserProfile;
+import com.iprogrammerr.riddle.model.Username;
 import com.iprogrammerr.riddle.model.security.Activator;
-import com.iprogrammerr.riddle.model.security.Token;
 import com.iprogrammerr.riddle.service.crud.UserService;
 import com.iprogrammerr.riddle.service.email.EmailService;
 import com.iprogrammerr.riddle.service.json.JsonService;
 import com.iprogrammerr.riddle.service.security.EncryptionService;
 import com.iprogrammerr.riddle.service.security.SecurityService;
 import com.iprogrammerr.riddle.service.validation.ValidationService;
+import com.iprogrammerr.riddle.user.User;
 
 public class UserController implements Controller {
 
@@ -46,9 +37,9 @@ public class UserController implements Controller {
     private JsonService jsonService;
     private List<HttpRespondent> requestResolvers;
 
-    public UserController(String activationLinkBase, UrlPattern urlPatternParser, UserService userService, ValidationService validationService,
-	    SecurityService securityService, EncryptionService encryptionService, EmailService emailService,
-	    JsonService jsonService) {
+    public UserController(String activationLinkBase, UrlPattern urlPatternParser, UserService userService,
+	    ValidationService validationService, SecurityService securityService, EncryptionService encryptionService,
+	    EmailService emailService, JsonService jsonService) {
 	this.activationLinkBase = activationLinkBase;
 	this.validationService = validationService;
 	this.userService = userService;
@@ -61,54 +52,13 @@ public class UserController implements Controller {
     }
 
     private void createRequestResolvers(UrlPattern urlPatternParser) {
-	requestResolvers.add(new HttpRespondent(MAIN_PATH + "/sign-in", RequestMethod.POST, urlPatternParser,this::signIn));
+	requestResolvers
+		.add(new HttpRespondent(MAIN_PATH + "/sign-in", RequestMethod.POST, urlPatternParser, this::signIn));
 	requestResolvers.add(new HttpRespondent(MAIN_PATH + "/sign-up", RequestMethod.POST, this::signUp));
 	requestResolvers.add(new HttpRespondent(MAIN_PATH + "/token-refresh", RequestMethod.POST, this::refreshToken));
 	requestResolvers.add(new HttpRespondent(MAIN_PATH + "/activate", RequestMethod.POST, this::activateUser));
 	requestResolvers.add(new HttpRespondent(MAIN_PATH + "/profile/{id:int}", RequestMethod.GET, this::getProfile));
 	requestResolvers.add(new HttpRespondent(MAIN_PATH + "/profile", RequestMethod.GET, this::getProfileByToken));
-    }
-
-    private Response signIn(ResolvedRequest request) {
-	ToSignInUser toSignInUser = jsonService.deserialize(ToSignInUser.class, request.body());
-	try {
-	    User user = userService.getUserByNameOrEmail(toSignInUser.getNameEmail());
-	    String encryptedPassword = encryptionService.encrypt(toSignInUser.getPassword());
-	    if (!encryptedPassword.equals(user.getPassword())) {
-		throw new UnauthenticatedException("Password is invalid");
-	    }
-	    if (!user.isActive()) {
-		throw new UnauthenticatedException("User needs to be activated first");
-	    }
-	    UserRole role = user.getUserRole();
-	    Token accessToken = securityService.createAccessToken(user.getName(), role.getName());
-	    Token refreshToken = securityService.createRefreshToken(user.getName(), role.getName());
-	    String json = jsonService.serialize(new SignInResponse(role.getName(), accessToken, refreshToken));
-	    return new JsonResponse(ResponseCode.OK, json);
-	} catch (NoResultException exception) {
-	    exception.printStackTrace();
-	    return new EmptyResponse(ResponseCode.NO_CONTENT);
-	}
-    }
-
-    private void signUp(Request request, Response response) {
-	ToSignUpUser toSignUpUser = jsonService.deserialize(ToSignUpUser.class, request);
-	if (userService.existsByEmail(toSignUpUser.getEmail())) {
-	    throw new DuplicateEntryHttpException("Given email is already taken.");
-	}
-	if (userService.existsByName(toSignUpUser.getName())) {
-	    throw new DuplicateEntryHttpException("Given name is already taken.");
-	}
-	User user = new User(toSignUpUser.getEmail(), toSignUpUser.getName(), toSignUpUser.getPassword());
-	validationService.validateUser(user);
-	UserRole userRole = userService.getUserRoleByName(UserRole.Role.PLAYER.value);
-	user.setPassword(encryptionService.encrypt(toSignUpUser.getPassword()));
-	user.setUserRole(userRole);
-	long id = userService.createUser(user);
-	String userHash = encryptionService.getToSendUserHash(user);
-	String activatingLink = activationLinkBase + "?id=" + id + "&activate=" + userHash;
-	emailService.sendSignUpEmail(toSignUpUser.getEmail(), activatingLink);
-	response.setCode(ResponseCode.CREATED);
     }
 
     private void refreshToken(Request request, Response response) {

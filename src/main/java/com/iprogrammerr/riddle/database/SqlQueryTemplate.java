@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.iprogrammerr.bright.server.model.KeyValue;
-import com.iprogrammerr.riddle.exception.database.QueryCreatorException;
-import com.iprogrammerr.riddle.model.database.Table;
+import com.iprogrammerr.riddle.model.database.Record;
 
 public class SqlQueryTemplate implements QueryTemplate {
 
@@ -41,7 +40,7 @@ public class SqlQueryTemplate implements QueryTemplate {
     public String query(String template, Object... values) throws Exception {
 	List<Integer> paramsIndexes = readParamsIndexes(template);
 	if (paramsIndexes.size() != values.length) {
-	    throw new QueryCreatorException("Incorrect number of " + paramSign + " signes to given values");
+	    throw new Exception("Incorrect number of " + paramSign + " signes to given values");
 	}
 	StringBuilder queryBuilder = new StringBuilder();
 	int beginIndex = 0;
@@ -54,7 +53,7 @@ public class SqlQueryTemplate implements QueryTemplate {
     }
 
     @Override
-    public String insert(Table table) throws Exception {
+    public String insert(Record table) throws Exception {
 	StringBuilder builder = new StringBuilder();
 	builder.append("insert into ").append(table.name()).append(" (");
 	List<KeyValue> columns = table.columns();
@@ -77,7 +76,7 @@ public class SqlQueryTemplate implements QueryTemplate {
     }
 
     @Override
-    public String update(Table table, String whereTemplate, Object... values) throws Exception {
+    public String update(Record table, String whereTemplate, Object... values) throws Exception {
 	StringBuilder builder = new StringBuilder();
 	builder.append("update ").append(table.name()).append(" set ");
 	List<KeyValue> columns = table.columns();

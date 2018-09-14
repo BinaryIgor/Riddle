@@ -1,7 +1,5 @@
 package com.iprogrammerr.riddle.database;
 
-import com.iprogrammerr.riddle.exception.database.QueryCreatorException;
-
 public class SqlQueryBuilder {
 
     private final StringBuilder builder;
@@ -51,15 +49,15 @@ public class SqlQueryBuilder {
 	return this;
     }
 
-    public SqlQueryBuilder set(Object... keysValues) {
+    public SqlQueryBuilder set(Object... keysValues) throws Exception {
 	if ((keysValues.length % 2) != 0) {
-	    throw new QueryCreatorException("Key values number is incorrect");
+	    throw new Exception("Key values number is incorrect");
 	}
 	builder.append("set ");
 	for (int i = 0; i < keysValues.length; i += 2) {
 	    boolean string = keysValues[i].getClass().isAssignableFrom(String.class);
 	    if (!string) {
-		throw new QueryCreatorException("Every key should be a string");
+		throw new Exception("Every key should be a string");
 	    }
 	    builder.append((String) keysValues[i]).append("=").append(toString(keysValues[i + 1]));
 	    if (i < (keysValues.length - 2)) {

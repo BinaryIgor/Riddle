@@ -6,9 +6,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.iprogrammerr.riddle.exception.validation.InvalidItemException;
-import com.iprogrammerr.riddle.model.database.User;
 import com.iprogrammerr.riddle.model.security.Activator;
 import com.iprogrammerr.riddle.service.validation.ValidationService;
+import com.iprogrammerr.riddle.user.User;
 
 public class ValidationServiceTest {
 
