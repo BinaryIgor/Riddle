@@ -1,6 +1,6 @@
 package com.iprogrammerr.riddle.database;
 
-import com.iprogrammerr.riddle.model.database.Record;
+import com.iprogrammerr.riddle.model.Record;
 
 public interface QueryTemplate {
 

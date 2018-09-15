@@ -16,13 +16,10 @@ public class SqlDatabaseSession implements DatabaseSession {
     @Override
     public <T> T select(String sql, QueryResultMapping<T> mapping) throws Exception {
 	try (Connection connection = database.connect()) {
-	    System.out.println(sql);
 	    Statement statement = connection.createStatement();
 	    ResultSet resultSet = statement.executeQuery(sql);
 	    resultSet.next();
 	    return mapping.map(resultSet);
-	} catch (Exception exception) {
-	    throw exception;
 	}
     }
 
@@ -34,8 +31,6 @@ public class SqlDatabaseSession implements DatabaseSession {
 	    ResultSet resultSet = preparedStatement.getGeneratedKeys();
 	    resultSet.next();
 	    return resultSet.getLong(1);
-	} catch (Exception exception) {
-	    throw exception;
 	}
     }
 
@@ -53,8 +48,6 @@ public class SqlDatabaseSession implements DatabaseSession {
 	try (Connection connection = database.connect()) {
 	    Statement statement = connection.createStatement();
 	    statement.executeUpdate(sql);
-	} catch (Exception exception) {
-	    throw exception;
 	}
     }
 

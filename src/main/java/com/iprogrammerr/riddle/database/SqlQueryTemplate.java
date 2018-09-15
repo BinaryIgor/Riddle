@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.iprogrammerr.bright.server.model.KeyValue;
-import com.iprogrammerr.riddle.model.database.Record;
+import com.iprogrammerr.riddle.model.Record;
 
 public class SqlQueryTemplate implements QueryTemplate {
 

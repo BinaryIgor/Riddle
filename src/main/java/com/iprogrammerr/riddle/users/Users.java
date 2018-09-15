@@ -1,4 +1,6 @@
-package com.iprogrammerr.riddle.user;
+package com.iprogrammerr.riddle.users;
+
+import com.iprogrammerr.riddle.user.User;
 
 public interface Users {
 

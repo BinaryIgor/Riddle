@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.iprogrammerr.riddle.database.DatabaseRecord;
 import com.iprogrammerr.riddle.database.SqlQueryTemplate;
-import com.iprogrammerr.riddle.model.database.DatabaseRecord;
 
 public class SqlQueryTemplateTest {
 

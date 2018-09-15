@@ -4,6 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;
 
+import com.iprogrammerr.riddle.user.User;
+
 public class ShaEncryption implements Encryption {
 
     private static final String USER_HASH_EQUALS_REPLACEMENT = "S";
@@ -14,18 +16,15 @@ public class ShaEncryption implements Encryption {
     }
 
     @Override
-    public String encrypted(String origin) {
-	byte[] encrypted = digest.digest(origin.getBytes(StandardCharsets.UTF_8));
+    public String encrypted(User user) throws Exception {
+	String toEncrypt = user.name() + user.email() + user.password();
+	byte[] encrypted = digest.digest(toEncrypt.getBytes(StandardCharsets.UTF_8));
 	return new String(encrypted, StandardCharsets.UTF_8);
     }
 
     @Override
-    public String hash(String... base) {
-	StringBuilder builder = new StringBuilder();
-	for (String element : base) {
-	    builder.append(element);
-	}
-	byte[] encrypted = digest.digest(builder.toString().getBytes(StandardCharsets.UTF_8));
+    public String hash(String base) {
+	byte[] encrypted = digest.digest(base.getBytes(StandardCharsets.UTF_8));
 	return Base64.getEncoder().encodeToString(encrypted).replaceAll("=", USER_HASH_EQUALS_REPLACEMENT);
     }
 

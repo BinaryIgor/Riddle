@@ -1,12 +1,14 @@
-package com.iprogrammerr.riddle.user;
+package com.iprogrammerr.riddle.users;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.iprogrammerr.riddle.database.DatabaseRecord;
 import com.iprogrammerr.riddle.database.DatabaseSession;
 import com.iprogrammerr.riddle.database.QueryTemplate;
-import com.iprogrammerr.riddle.model.database.DatabaseRecord;
-import com.iprogrammerr.riddle.model.database.Record;
+import com.iprogrammerr.riddle.model.Record;
+import com.iprogrammerr.riddle.user.DatabaseUser;
+import com.iprogrammerr.riddle.user.User;
 
 public class DatabaseUsers implements Users {
 

@@ -15,12 +15,10 @@ import com.iprogrammerr.riddle.security.token.TokenTemplate;
 import com.iprogrammerr.riddle.user.ToSignInJsonUser;
 import com.iprogrammerr.riddle.user.ToSignInUser;
 import com.iprogrammerr.riddle.user.User;
-import com.iprogrammerr.riddle.user.Users;
+import com.iprogrammerr.riddle.users.Users;
 
 public class SignInRespondent implements Respondent {
 
-    public static final long ACCES_TOKEN_EXPIRATION_TIME = 3_600_000L;
-    public static final long REFRESH_TOKEN_EXPIRATION_TIME = 604_800_000L;
     private final Users users;
     private final Encryption encryption;
     private final TokenTemplate accessTokenTemplate;
@@ -40,7 +38,7 @@ public class SignInRespondent implements Respondent {
 	try {
 	    ToSignInUser toSignInUser = new ToSignInJsonUser(new String(request.body()));
 	    User user = users.user(toSignInUser.nameOrEmail());
-	    String encryptedPassword = encryption.encrypted(toSignInUser.password());
+	    String encryptedPassword = encryption.encrypted(user);
 	    if (!encryptedPassword.equals(user.password())) {
 		return new UnauthenticatedResponse("Invalid password");
 	    }

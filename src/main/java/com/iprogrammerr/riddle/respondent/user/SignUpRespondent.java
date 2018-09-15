@@ -4,13 +4,13 @@ import com.iprogrammerr.bright.server.request.MatchedRequest;
 import com.iprogrammerr.bright.server.respondent.Respondent;
 import com.iprogrammerr.bright.server.response.CreatedResponse;
 import com.iprogrammerr.bright.server.response.Response;
-import com.iprogrammerr.bright.server.response.WrongRequestResponse;
+import com.iprogrammerr.bright.server.response.BadRequestResponse;
 import com.iprogrammerr.riddle.email.EmailServer;
 import com.iprogrammerr.riddle.security.Encryption;
 import com.iprogrammerr.riddle.user.ToSignUpJsonUser;
 import com.iprogrammerr.riddle.user.ToValidateSignUpUser;
-import com.iprogrammerr.riddle.user.Users;
 import com.iprogrammerr.riddle.user.ValidatableToSignUpUser;
+import com.iprogrammerr.riddle.users.Users;
 
 public class SignUpRespondent implements Respondent {
 
@@ -33,10 +33,10 @@ public class SignUpRespondent implements Respondent {
 		    new ToSignUpJsonUser(new String(request.body())));
 	    toSignUpUser.validate();
 	    if (users.exists(toSignUpUser.name())) {
-		return new WrongRequestResponse(toSignUpUser.name() + " is taken already");
+		return new BadRequestResponse(toSignUpUser.name() + " is taken already");
 	    }
 	    if (users.exists(toSignUpUser.email())) {
-		return new WrongRequestResponse(toSignUpUser.email() + " is taken already");
+		return new BadRequestResponse(toSignUpUser.email() + " is taken already");
 	    }
 	    String hashedPassword = encryption.hash(toSignUpUser.password());
 	    long id = users.createPlayer(toSignUpUser.name(), toSignUpUser.email(), hashedPassword);
@@ -46,7 +46,7 @@ public class SignUpRespondent implements Respondent {
 	    return new CreatedResponse("Account has been created. Check your email make it active.");
 	} catch (Exception exception) {
 	    exception.printStackTrace();
-	    return new WrongRequestResponse(exception.getMessage());
+	    return new BadRequestResponse(exception.getMessage());
 	}
     }
 

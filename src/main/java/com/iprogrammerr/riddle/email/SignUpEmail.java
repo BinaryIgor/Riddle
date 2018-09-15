@@ -29,7 +29,7 @@ public class SignUpEmail implements Email {
 
     @Override
     public String text() {
-	return "Congratulations, You have signed up! To activate your account click link: " + activatingLink;
+	return "Congratulations, You have signed up! To activate your account click a link: " + activatingLink;
     }
 
 }

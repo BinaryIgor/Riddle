@@ -10,9 +10,9 @@ import com.iprogrammerr.riddle.database.SqlDatabase;
 import com.iprogrammerr.riddle.database.SqlDatabaseSession;
 import com.iprogrammerr.riddle.database.SqlQueryTemplate;
 import com.iprogrammerr.riddle.user.DatabaseUser;
-import com.iprogrammerr.riddle.user.DatabaseUsers;
 import com.iprogrammerr.riddle.user.User;
-import com.iprogrammerr.riddle.user.Users;
+import com.iprogrammerr.riddle.users.DatabaseUsers;
+import com.iprogrammerr.riddle.users.Users;
 
 public class RawSqlDemo {
 

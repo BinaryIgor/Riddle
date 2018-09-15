@@ -1,9 +1,11 @@
 package com.iprogrammerr.riddle.security;
 
+import com.iprogrammerr.riddle.user.User;
+
 public interface Encryption {
 
-    String encrypted(String origin);
+    String encrypted(User user) throws Exception;
 
-    String hash(String... base);
+    String hash(String base);
 
 }

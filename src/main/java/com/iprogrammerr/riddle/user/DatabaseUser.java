@@ -5,21 +5,21 @@ import java.sql.ResultSet;
 import com.iprogrammerr.bright.server.model.KeyValue;
 import com.iprogrammerr.bright.server.model.KeysValues;
 import com.iprogrammerr.bright.server.model.StringsObjects;
+import com.iprogrammerr.riddle.database.DatabaseRecord;
 import com.iprogrammerr.riddle.database.DatabaseSession;
 import com.iprogrammerr.riddle.database.QueryTemplate;
-import com.iprogrammerr.riddle.model.database.DatabaseRecord;
 
 public class DatabaseUser implements User {
 
     private long id;
     private DatabaseSession session;
-    private QueryTemplate queryTemplate;
+    private QueryTemplate template;
     private KeysValues columns;
 
     public DatabaseUser(DatabaseSession session, QueryTemplate queryTemplate, ResultSet resultSet) throws Exception {
 	this.id = resultSet.getLong("id");
 	this.session = session;
-	this.queryTemplate = queryTemplate;
+	this.template = queryTemplate;
 	this.columns = new StringsObjects().add("name", resultSet.getString("name"))
 		.add("email", resultSet.getString("email")).add("password", resultSet.getString("password"))
 		.add("active", resultSet.getBoolean("active")).add("role", resultSet.getString("role"));
@@ -28,7 +28,7 @@ public class DatabaseUser implements User {
     public DatabaseUser(long id, DatabaseSession session, QueryTemplate queryTemplate) {
 	this.id = id;
 	this.session = session;
-	this.queryTemplate = queryTemplate;
+	this.template = queryTemplate;
 	this.columns = new StringsObjects();
     }
 
@@ -73,14 +73,14 @@ public class DatabaseUser implements User {
     }
 
     private void getAll() throws Exception {
-	String selectAllTemplate = "select user.*, user_role.name as rname from user inner join user_role on "
+	String selectAllTemplate = "select user.*, user_role.name as role from user inner join user_role on "
 		+ " user.user_role_id = user_role.id where user.id = ?";
-	session.select(queryTemplate.query(selectAllTemplate, id), resultSet -> {
+	session.select(template.query(selectAllTemplate, id), resultSet -> {
 	    columns.add("name", resultSet.getString("name"));
 	    columns.add("email", resultSet.getString("email"));
 	    columns.add("password", resultSet.getString("password"));
 	    columns.add("active", resultSet.getBoolean("active"));
-	    columns.add("role", resultSet.getString("rname"));
+	    columns.add("role", resultSet.getString("role"));
 	    return columns;
 	});
     }
@@ -97,14 +97,14 @@ public class DatabaseUser implements User {
 
     @Override
     public void update(KeysValues columns) throws Exception {
-	String query = queryTemplate.update(new DatabaseRecord("user", columns), "id = ?", id);
+	String query = template.update(new DatabaseRecord("user", columns), "id = ?", id);
 	session.update(query);
 	getAll();
     }
 
     @Override
     public void update(KeyValue column) throws Exception {
-	String query = queryTemplate.update(new DatabaseRecord("user").put(column.key(), column.value()), "id = ?", id);
+	String query = template.update(new DatabaseRecord("user").put(column.key(), column.value()), "id = ?", id);
 	session.update(query);
 	getAll();
     }

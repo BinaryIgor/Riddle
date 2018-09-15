@@ -4,6 +4,7 @@ import java.sql.Connection;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
+//Is this data source good enough?
 public class SqlDatabase implements Database {
 
     private ComboPooledDataSource dataSource;

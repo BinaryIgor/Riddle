@@ -1,4 +1,4 @@
-package com.iprogrammerr.riddle.model.database;
+package com.iprogrammerr.riddle.model;
 
 import java.util.List;
 

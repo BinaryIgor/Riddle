@@ -1,10 +1,11 @@
-package com.iprogrammerr.riddle.model.database;
+package com.iprogrammerr.riddle.database;
 
 import java.util.List;
 
 import com.iprogrammerr.bright.server.model.KeyValue;
 import com.iprogrammerr.bright.server.model.KeysValues;
 import com.iprogrammerr.bright.server.model.StringsObjects;
+import com.iprogrammerr.riddle.model.Record;
 
 public class DatabaseRecord implements Record {
 

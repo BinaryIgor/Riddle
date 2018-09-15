@@ -4,56 +4,42 @@ import java.util.Properties;
 
 public class ApplicationConfiguration {
 
-    private String userActivationLinkBase;
-    private String adminEmail;
-    private String adminEmailPassword;
-    private String smtpHost;
-    private int smtpPort;
-    private String databaseUsername;
-    private String databasePassword;
-    private String jdbcUrl;
+    private Properties source;
 
-    public ApplicationConfiguration(Properties properties) {
-	userActivationLinkBase = properties.getProperty("user.activation-link-base");
-	adminEmail = properties.getProperty("admin.email");
-	adminEmailPassword = properties.getProperty("admin.email.password");
-	smtpHost = properties.getProperty("smtp.host");
-	smtpPort = Integer.parseInt(properties.getProperty("smtp.port"));
-	databaseUsername = properties.getProperty("database.username");
-	databasePassword = properties.getProperty("database.password");
-	jdbcUrl = properties.getProperty("jdbc-url");
+    public ApplicationConfiguration(Properties source) {
+	this.source = source;
     }
 
-    public String getUserActivationLinkBase() {
-	return userActivationLinkBase;
+    public String userActivationLinkBase() {
+	return source.getProperty("user.activation-link-base", "");
     }
 
-    public String getAdminEmail() {
-	return adminEmail;
+    public String adminEmail() {
+	return source.getProperty("user.activation-link-base", "");
     }
 
-    public String getAdminEmailPassword() {
-	return adminEmailPassword;
+    public String adminEmailPassword() {
+	return source.getProperty("admin.email", "");
     }
 
-    public String getSmtpHost() {
-	return smtpHost;
+    public String smtpHost() {
+	return source.getProperty("admin.email.password", "");
     }
 
-    public int getSmtpPort() {
-	return smtpPort;
+    public int getSmtpPort() throws Exception {
+	return Integer.parseInt(source.getProperty("smtp.port"));
     }
 
-    public String getDatabaseUsername() {
-	return databaseUsername;
+    public String databaseUsername() {
+	return source.getProperty("database.username", "");
     }
 
-    public String getDatabasePassword() {
-	return databasePassword;
+    public String databasePassword() {
+	return source.getProperty("database.password", "");
     }
 
-    public String getJdbcUrl() {
-	return jdbcUrl;
+    public String jdbcUrl() {
+	return source.getProperty("jdbc-url", "");
     }
 
 }

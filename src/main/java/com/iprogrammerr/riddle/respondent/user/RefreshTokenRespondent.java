@@ -14,7 +14,7 @@ import com.iprogrammerr.riddle.security.token.JsonWebTokenDecryption;
 import com.iprogrammerr.riddle.security.token.Token;
 import com.iprogrammerr.riddle.security.token.TokenDecryption;
 import com.iprogrammerr.riddle.security.token.TokenTemplate;
-import com.iprogrammerr.riddle.user.Users;
+import com.iprogrammerr.riddle.users.Users;
 
 public class RefreshTokenRespondent implements Respondent {
 
