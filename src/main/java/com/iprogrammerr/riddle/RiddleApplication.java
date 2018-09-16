@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Properties;
 
 import com.iprogrammerr.bright.server.Server;
-import com.iprogrammerr.bright.server.configuration.BrightServerConfiguration;
+import com.iprogrammerr.bright.server.cors.BrightConfiguration;
 import com.iprogrammerr.bright.server.filter.ConditionalRequestFilter;
 import com.iprogrammerr.bright.server.method.GetMethod;
 import com.iprogrammerr.bright.server.method.PostMethod;
@@ -33,7 +33,9 @@ import com.iprogrammerr.riddle.security.ShaEncryption;
 import com.iprogrammerr.riddle.security.token.JsonWebTokenTemplate;
 import com.iprogrammerr.riddle.security.token.TokenTemplate;
 import com.iprogrammerr.riddle.users.DatabaseUsers;
+import com.iprogrammerr.riddle.users.DatabaseUsersRoles;
 import com.iprogrammerr.riddle.users.Users;
+import com.iprogrammerr.riddle.users.UsersRoles;
 
 public class RiddleApplication {
 
@@ -54,8 +56,9 @@ public class RiddleApplication {
 
 	EmailServer emailServer = new RiddleEmailServer(applicationConfiguration.adminEmail(),
 		applicationConfiguration.adminEmailPassword(), applicationConfiguration.smtpHost(),
-		applicationConfiguration.getSmtpPort());
-	Users users = new DatabaseUsers(session, template);
+		applicationConfiguration.smtpPort());
+	UsersRoles usersRoles = new DatabaseUsersRoles(session);
+	Users users = new DatabaseUsers(session, usersRoles, template);
 	Encryption encryption = new ShaEncryption();
 
 	List<ConditionalRespondent> respondents = new ArrayList<>();
@@ -89,8 +92,8 @@ public class RiddleApplication {
 	return new ApplicationConfiguration(properties("/application.properties"));
     }
 
-    private static BrightServerConfiguration serverConfiguration() throws IOException {
-	return new BrightServerConfiguration(properties("/server.properties"));
+    private static BrightConfiguration serverConfiguration() throws IOException {
+	return new BrightConfiguration(properties("/server.properties"));
     }
 
     private static Properties properties(String path) throws IOException {

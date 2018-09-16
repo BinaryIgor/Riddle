@@ -2,9 +2,9 @@ package com.iprogrammerr.riddle.respondent.user;
 
 import com.iprogrammerr.bright.server.request.MatchedRequest;
 import com.iprogrammerr.bright.server.respondent.Respondent;
+import com.iprogrammerr.bright.server.response.BadRequestResponse;
 import com.iprogrammerr.bright.server.response.CreatedResponse;
 import com.iprogrammerr.bright.server.response.Response;
-import com.iprogrammerr.bright.server.response.BadRequestResponse;
 import com.iprogrammerr.riddle.email.EmailServer;
 import com.iprogrammerr.riddle.security.Encryption;
 import com.iprogrammerr.riddle.user.ToSignUpJsonUser;

@@ -2,12 +2,12 @@ package com.iprogrammerr.riddle.respondent.user;
 
 import org.json.JSONObject;
 
-import com.iprogrammerr.bright.server.header.JsonContentTypeHeader;
 import com.iprogrammerr.bright.server.request.MatchedRequest;
 import com.iprogrammerr.bright.server.respondent.Respondent;
 import com.iprogrammerr.bright.server.response.OkResponse;
 import com.iprogrammerr.bright.server.response.Response;
 import com.iprogrammerr.bright.server.response.UnauthorizedResponse;
+import com.iprogrammerr.bright.server.response.body.JsonResponseBody;
 import com.iprogrammerr.riddle.response.body.NewAccessTokenBody;
 import com.iprogrammerr.riddle.security.token.JsonWebToken;
 import com.iprogrammerr.riddle.security.token.JsonWebTokenDecryption;
@@ -38,7 +38,7 @@ public class RefreshTokenRespondent implements Respondent {
 		return new UnauthorizedResponse("Given user does not exist");
 	    }
 	    Token acessToken = new JsonWebToken(username, accessTokenTemplate);
-	    return new OkResponse(new JsonContentTypeHeader(), new NewAccessTokenBody(acessToken).content());
+	    return new OkResponse(new JsonResponseBody(new NewAccessTokenBody(acessToken).content()));
 	} catch (Exception exception) {
 	    exception.printStackTrace();
 	    return new UnauthorizedResponse(exception.getMessage());

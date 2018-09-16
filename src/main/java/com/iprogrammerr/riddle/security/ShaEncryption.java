@@ -4,8 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;
 
-import com.iprogrammerr.riddle.user.User;
-
 public class ShaEncryption implements Encryption {
 
     private static final String USER_HASH_EQUALS_REPLACEMENT = "S";
@@ -13,13 +11,6 @@ public class ShaEncryption implements Encryption {
 
     public ShaEncryption() throws Exception {
 	digest = MessageDigest.getInstance("SHA-256");
-    }
-
-    @Override
-    public String encrypted(User user) throws Exception {
-	String toEncrypt = user.name() + user.email() + user.password();
-	byte[] encrypted = digest.digest(toEncrypt.getBytes(StandardCharsets.UTF_8));
-	return new String(encrypted, StandardCharsets.UTF_8);
     }
 
     @Override

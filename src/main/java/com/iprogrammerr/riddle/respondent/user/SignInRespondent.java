@@ -1,12 +1,12 @@
 package com.iprogrammerr.riddle.respondent.user;
 
-import com.iprogrammerr.bright.server.header.JsonContentTypeHeader;
 import com.iprogrammerr.bright.server.request.MatchedRequest;
 import com.iprogrammerr.bright.server.respondent.Respondent;
 import com.iprogrammerr.bright.server.response.NoContentResponse;
 import com.iprogrammerr.bright.server.response.OkResponse;
 import com.iprogrammerr.bright.server.response.Response;
 import com.iprogrammerr.bright.server.response.UnauthenticatedResponse;
+import com.iprogrammerr.bright.server.response.body.JsonResponseBody;
 import com.iprogrammerr.riddle.response.body.SignInBody;
 import com.iprogrammerr.riddle.security.Encryption;
 import com.iprogrammerr.riddle.security.token.JsonWebToken;
@@ -38,7 +38,7 @@ public class SignInRespondent implements Respondent {
 	try {
 	    ToSignInUser toSignInUser = new ToSignInJsonUser(new String(request.body()));
 	    User user = users.user(toSignInUser.nameOrEmail());
-	    String encryptedPassword = encryption.encrypted(user);
+	    String encryptedPassword = encryption.hash(toSignInUser.password());
 	    if (!encryptedPassword.equals(user.password())) {
 		return new UnauthenticatedResponse("Invalid password");
 	    }
@@ -47,8 +47,8 @@ public class SignInRespondent implements Respondent {
 	    }
 	    Token accessToken = new JsonWebToken(user.name(), accessTokenTemplate);
 	    Token refreshToken = new JsonWebToken(user.name(), refreshTokenTemplate);
-	    return new OkResponse(new JsonContentTypeHeader(),
-		    new SignInBody(user.role(), accessToken, refreshToken).content());
+	    return new OkResponse(
+		    new JsonResponseBody(new SignInBody(user.role(), accessToken, refreshToken).content()));
 	} catch (Exception exception) {
 	    exception.printStackTrace();
 	    return new NoContentResponse();

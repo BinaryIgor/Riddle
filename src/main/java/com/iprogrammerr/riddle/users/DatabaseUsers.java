@@ -16,10 +16,12 @@ public class DatabaseUsers implements Users {
 	    + "on user.user_role_id = user_role.id";
     private static final String USER_EXISTS_QUERY = "select count(1) from user";
     private DatabaseSession session;
+    private final UsersRoles usersRoles;
     private QueryTemplate queryTemplate;
 
-    public DatabaseUsers(DatabaseSession session, QueryTemplate queryTemplate) {
+    public DatabaseUsers(DatabaseSession session, UsersRoles usersRoles, QueryTemplate queryTemplate) {
 	this.session = session;
+	this.usersRoles = usersRoles;
 	this.queryTemplate = queryTemplate;
     }
 
@@ -30,7 +32,8 @@ public class DatabaseUsers implements Users {
 
     @Override
     public long createPlayer(String name, String email, String password) throws Exception {
-	Record user = new DatabaseRecord("user").put("name", name).put("email", email).put("password", password);
+	Record user = new DatabaseRecord("user").put("name", name).put("email", email).put("password", password)
+		.put("user_role_id", usersRoles.playerId());
 	return session.create(queryTemplate.insert(user));
     }
 
@@ -58,9 +61,9 @@ public class DatabaseUsers implements Users {
     public User user(String nameOrEmail) throws Exception {
 	String query = USER_SELECT_QUERY;
 	if (nameOrEmail.contains("@")) {
-	    query += "where user.email = ?";
+	    query += " where user.email = ?";
 	} else {
-	    query += "where user.name = ?";
+	    query += " where user.name = ?";
 	}
 	return session.select(queryTemplate.query(query, nameOrEmail),
 		resultSet -> new DatabaseUser(session, queryTemplate, resultSet));
@@ -70,9 +73,9 @@ public class DatabaseUsers implements Users {
     public boolean exists(String nameOrEmail) {
 	String query = USER_EXISTS_QUERY;
 	if (nameOrEmail.contains("@")) {
-	    query += "where user.email = ?";
+	    query += " where user.email = ?";
 	} else {
-	    query += "where user.name = ?";
+	    query += " where user.name = ?";
 	}
 	try {
 	    return session.select(queryTemplate.query(query, nameOrEmail), resultSet -> resultSet.getLong(1) > 0);

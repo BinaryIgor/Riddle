@@ -15,18 +15,18 @@ public class ApplicationConfiguration {
     }
 
     public String adminEmail() {
-	return source.getProperty("user.activation-link-base", "");
-    }
-
-    public String adminEmailPassword() {
 	return source.getProperty("admin.email", "");
     }
 
-    public String smtpHost() {
+    public String adminEmailPassword() {
 	return source.getProperty("admin.email.password", "");
     }
 
-    public int getSmtpPort() throws Exception {
+    public String smtpHost() {
+	return source.getProperty("smtp.host", "");
+    }
+
+    public int smtpPort() throws Exception {
 	return Integer.parseInt(source.getProperty("smtp.port"));
     }
 

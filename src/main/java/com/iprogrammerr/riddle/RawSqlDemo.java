@@ -2,7 +2,6 @@ package com.iprogrammerr.riddle;
 
 import java.util.Iterator;
 
-import com.iprogrammerr.bright.server.model.StringObject;
 import com.iprogrammerr.riddle.database.Database;
 import com.iprogrammerr.riddle.database.DatabaseSession;
 import com.iprogrammerr.riddle.database.QueryTemplate;
@@ -12,7 +11,9 @@ import com.iprogrammerr.riddle.database.SqlQueryTemplate;
 import com.iprogrammerr.riddle.user.DatabaseUser;
 import com.iprogrammerr.riddle.user.User;
 import com.iprogrammerr.riddle.users.DatabaseUsers;
+import com.iprogrammerr.riddle.users.DatabaseUsersRoles;
 import com.iprogrammerr.riddle.users.Users;
+import com.iprogrammerr.riddle.users.UsersRoles;
 
 public class RawSqlDemo {
 
@@ -25,17 +26,15 @@ public class RawSqlDemo {
 	    Database database = new SqlDatabase(username, password, jdbcUrl);
 	    DatabaseSession session = new SqlDatabaseSession(database);
 	    QueryTemplate queryTemplate = new SqlQueryTemplate();
+	    UsersRoles usersRoles = new DatabaseUsersRoles(session);
 	    User user = new DatabaseUser(20, session, queryTemplate);
 	    System.out.println("User name = " + user.name());
 	    System.out.println(user.toString());
-	    Users users = new DatabaseUsers(session, queryTemplate);
+	    Users users = new DatabaseUsers(session, usersRoles, queryTemplate);
 	    Iterator<User> cachedUsers = users.all().iterator();
 	    while (cachedUsers.hasNext()) {
 		System.out.println(cachedUsers.next().email());
 	    }
-	    user.update(new StringObject("name", user.name() + "I"));
-	    System.out.println("Updated name = " + user.name());
-
 	} catch (Exception exception) {
 	    exception.printStackTrace();
 	}

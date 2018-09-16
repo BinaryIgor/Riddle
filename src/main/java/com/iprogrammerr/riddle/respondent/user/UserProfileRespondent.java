@@ -1,12 +1,12 @@
 package com.iprogrammerr.riddle.respondent.user;
 
-import com.iprogrammerr.bright.server.header.JsonContentTypeHeader;
 import com.iprogrammerr.bright.server.request.MatchedRequest;
 import com.iprogrammerr.bright.server.respondent.Respondent;
 import com.iprogrammerr.bright.server.response.BadRequestResponse;
 import com.iprogrammerr.bright.server.response.NoContentResponse;
 import com.iprogrammerr.bright.server.response.OkResponse;
 import com.iprogrammerr.bright.server.response.Response;
+import com.iprogrammerr.bright.server.response.body.JsonResponseBody;
 import com.iprogrammerr.riddle.database.DatabaseSession;
 import com.iprogrammerr.riddle.database.QueryTemplate;
 import com.iprogrammerr.riddle.response.body.UserProfileBody;
@@ -40,8 +40,8 @@ public class UserProfileRespondent implements Respondent {
 		user = fromToken(request);
 	    }
 	    UserProfile userProfile = new MockedUserProfile();
-	    return new OkResponse(new JsonContentTypeHeader(),
-		    new UserProfileBody(user.name(), user.email(), userProfile.points()).content());
+	    return new OkResponse(new JsonResponseBody(
+		    new UserProfileBody(user.name(), user.email(), userProfile.points()).content()));
 	} catch (Exception exception) {
 	    exception.printStackTrace();
 	    return new NoContentResponse();
