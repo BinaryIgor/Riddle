@@ -78,6 +78,8 @@ public final class RiddleApplication implements Application {
 	Users users = new DatabaseUsers(session, usersRoles, template);
 	Encryption encryption = new ShaEncryption();
 
+	String authorizationHeaderKey = "Authorization";
+
 	List<ConditionalRespondent> respondents = new ArrayList<>();
 	ConditionalRespondent signInRespondent = new HttpRespondent("user/sign-in", post,
 		new SignInRespondent(users, encryption, accessTokenTemplate, refreshTokenTemplate));
@@ -92,7 +94,7 @@ public final class RiddleApplication implements Application {
 		new UserActivationRespondent(session, template, encryption));
 	respondents.add(userActivationRespondent);
 	ConditionalRespondent userProfileRespondent = new HttpRespondent("user/profile", get,
-		new UserProfileRespondent(session, template));
+		new UserProfileRespondent(session, template, users, accessTokenTemplate, authorizationHeaderKey));
 	respondents.add(userProfileRespondent);
 
 	String rootDirectory = System.getProperty("user.dir") + File.separator + "riddle";

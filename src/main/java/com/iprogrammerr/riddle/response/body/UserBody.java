@@ -2,16 +2,16 @@ package com.iprogrammerr.riddle.response.body;
 
 import org.json.JSONObject;
 
-public class UserProfileBody implements JsonBody {
+public class UserBody implements JsonBody {
 
     private final String name;
     private final String email;
-    private final int points;
+    private final String password;
 
-    public UserProfileBody(String name, String email, int points) {
+    public UserBody(String name, String email, String password) {
 	this.name = name;
 	this.email = email;
-	this.points = points;
+	this.password = password;
     }
 
     @Override
@@ -19,7 +19,7 @@ public class UserProfileBody implements JsonBody {
 	JSONObject jsonObject = new JSONObject();
 	jsonObject.put("name", name);
 	jsonObject.put("email", email);
-	jsonObject.put("points", points);
+	jsonObject.put("passwod", password);
 	return jsonObject.toString();
     }
 

@@ -9,23 +9,30 @@ import com.iprogrammerr.bright.server.response.template.NoContentResponse;
 import com.iprogrammerr.bright.server.response.template.OkResponse;
 import com.iprogrammerr.riddle.database.DatabaseSession;
 import com.iprogrammerr.riddle.database.QueryTemplate;
-import com.iprogrammerr.riddle.response.body.UserProfileBody;
+import com.iprogrammerr.riddle.response.body.UserBody;
+import com.iprogrammerr.riddle.security.token.JsonWebTokenDecryption;
+import com.iprogrammerr.riddle.security.token.TokenTemplate;
 import com.iprogrammerr.riddle.user.DatabaseUser;
-import com.iprogrammerr.riddle.user.MockedUserProfile;
 import com.iprogrammerr.riddle.user.User;
-import com.iprogrammerr.riddle.user.UserProfile;
+import com.iprogrammerr.riddle.users.Users;
 
-public class UserProfileRespondent implements Respondent {
+public final class UserProfileRespondent implements Respondent {
 
     private final DatabaseSession session;
     private final QueryTemplate template;
+    private final Users users;
+    private final TokenTemplate tokenTemplate;
+    private final String authorizationHeader;
 
-    public UserProfileRespondent(DatabaseSession session, QueryTemplate template) {
+    public UserProfileRespondent(DatabaseSession session, QueryTemplate template, Users users,
+	    TokenTemplate tokenTemplate, String authorizationHeader) {
 	this.session = session;
 	this.template = template;
+	this.users = users;
+	this.tokenTemplate = tokenTemplate;
+	this.authorizationHeader = authorizationHeader;
     }
 
-    // TODO unmock user profile!
     @Override
     public Response respond(MatchedRequest request) {
 	try {
@@ -39,17 +46,17 @@ public class UserProfileRespondent implements Respondent {
 	    } else {
 		user = fromToken(request);
 	    }
-	    UserProfile userProfile = new MockedUserProfile();
-	    return new OkResponse(new JsonResponseBody(
-		    new UserProfileBody(user.name(), user.email(), userProfile.points()).content()));
+	    return new OkResponse(
+		    new JsonResponseBody(new UserBody(user.name(), user.email(), user.password()).content()));
 	} catch (Exception exception) {
 	    exception.printStackTrace();
 	    return new NoContentResponse();
 	}
     }
 
-    // TODO get username from token and then find user
     private User fromToken(MatchedRequest request) throws Exception {
-	throw new Exception();
+	String token = request.header(authorizationHeader);
+	String name = new JsonWebTokenDecryption(token, tokenTemplate).subject();
+	return users.user(name);
     }
 }

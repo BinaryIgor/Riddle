@@ -18,7 +18,7 @@ public class JsonWebTokenDecryption implements TokenDecryption {
     private Optional<Claims> claims;
 
     public JsonWebTokenDecryption(String toDecrypt, TokenTemplate template) {
-	this.toDecrypt = toDecrypt;
+	this.toDecrypt = toDecrypt.replace("Bearer ", "");
 	this.template = template;
 	this.claims = Optional.empty();
     }
