@@ -2,11 +2,11 @@ package com.iprogrammerr.riddle.respondent.user;
 
 import com.iprogrammerr.bright.server.request.MatchedRequest;
 import com.iprogrammerr.bright.server.respondent.Respondent;
-import com.iprogrammerr.bright.server.response.NoContentResponse;
-import com.iprogrammerr.bright.server.response.OkResponse;
 import com.iprogrammerr.bright.server.response.Response;
-import com.iprogrammerr.bright.server.response.UnauthenticatedResponse;
 import com.iprogrammerr.bright.server.response.body.JsonResponseBody;
+import com.iprogrammerr.bright.server.response.template.NoContentResponse;
+import com.iprogrammerr.bright.server.response.template.OkResponse;
+import com.iprogrammerr.bright.server.response.template.UnauthenticatedResponse;
 import com.iprogrammerr.riddle.response.body.SignInBody;
 import com.iprogrammerr.riddle.security.Encryption;
 import com.iprogrammerr.riddle.security.token.JsonWebToken;
@@ -34,7 +34,7 @@ public class SignInRespondent implements Respondent {
     }
 
     @Override
-    public Response respond(MatchedRequest request) throws Exception {
+    public Response respond(MatchedRequest request) {
 	try {
 	    ToSignInUser toSignInUser = new ToSignInJsonUser(new String(request.body()));
 	    User user = users.user(toSignInUser.nameOrEmail());

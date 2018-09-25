@@ -1,19 +1,30 @@
 package com.iprogrammerr.riddle;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
+import com.iprogrammerr.bright.server.Connector;
+import com.iprogrammerr.bright.server.RequestResponseConnector;
 import com.iprogrammerr.bright.server.Server;
-import com.iprogrammerr.bright.server.cors.BrightConfiguration;
+import com.iprogrammerr.bright.server.application.Application;
+import com.iprogrammerr.bright.server.application.HttpApplication;
+import com.iprogrammerr.bright.server.cors.ConfigurableCors;
+import com.iprogrammerr.bright.server.cors.Cors;
 import com.iprogrammerr.bright.server.filter.ConditionalRequestFilter;
 import com.iprogrammerr.bright.server.method.GetMethod;
 import com.iprogrammerr.bright.server.method.PostMethod;
 import com.iprogrammerr.bright.server.method.RequestMethod;
+import com.iprogrammerr.bright.server.protocol.HttpOneProtocol;
+import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
+import com.iprogrammerr.bright.server.respondent.FilesRespondent;
 import com.iprogrammerr.bright.server.respondent.HttpRespondent;
+import com.iprogrammerr.bright.server.response.Response;
 import com.iprogrammerr.riddle.configuration.ApplicationConfiguration;
 import com.iprogrammerr.riddle.database.Database;
 import com.iprogrammerr.riddle.database.DatabaseSession;
@@ -37,7 +48,13 @@ import com.iprogrammerr.riddle.users.DatabaseUsersRoles;
 import com.iprogrammerr.riddle.users.Users;
 import com.iprogrammerr.riddle.users.UsersRoles;
 
-public class RiddleApplication {
+public final class RiddleApplication implements Application {
+
+    private final Application application;
+
+    public RiddleApplication(Application application) {
+	this.application = application;
+    }
 
     // TODO log4j config?
     public static void main(String[] args) throws Exception {
@@ -78,9 +95,19 @@ public class RiddleApplication {
 		new UserProfileRespondent(session, template));
 	respondents.add(userProfileRespondent);
 
+	String rootDirectory = System.getProperty("user.dir") + File.separator + "riddle";
+	ConditionalRespondent fileRespondent = new FilesRespondent(rootDirectory);
+	respondents.add(fileRespondent);
+
 	List<ConditionalRequestFilter> filters = new ArrayList<>();
 
-	Server server = new Server(serverConfiguration(), respondents, filters);
+	Cors cors = new ConfigurableCors("http://localhost:8080", "*", "GET, POST");
+
+	RiddleApplication application = new RiddleApplication(
+		new HttpApplication("riddle", cors, respondents, filters));
+
+	Connector connector = new RequestResponseConnector(new HttpOneProtocol(), application);
+	Server server = new Server(8000, connector);
 	Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 	    database.close();
 	    server.stop();
@@ -92,16 +119,17 @@ public class RiddleApplication {
 	return new ApplicationConfiguration(properties("/application.properties"));
     }
 
-    private static BrightConfiguration serverConfiguration() throws IOException {
-	return new BrightConfiguration(properties("/server.properties"));
-    }
-
     private static Properties properties(String path) throws IOException {
 	Properties properties = new Properties();
 	InputStream inputStream = RiddleApplication.class.getResourceAsStream(path);
 	properties.load(inputStream);
 	inputStream.close();
 	return properties;
+    }
+
+    @Override
+    public Optional<Response> respond(Request request) {
+	return application.respond(request);
     }
 
 }

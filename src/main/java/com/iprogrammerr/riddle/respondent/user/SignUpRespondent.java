@@ -2,9 +2,9 @@ package com.iprogrammerr.riddle.respondent.user;
 
 import com.iprogrammerr.bright.server.request.MatchedRequest;
 import com.iprogrammerr.bright.server.respondent.Respondent;
-import com.iprogrammerr.bright.server.response.BadRequestResponse;
-import com.iprogrammerr.bright.server.response.CreatedResponse;
 import com.iprogrammerr.bright.server.response.Response;
+import com.iprogrammerr.bright.server.response.template.BadRequestResponse;
+import com.iprogrammerr.bright.server.response.template.CreatedResponse;
 import com.iprogrammerr.riddle.email.EmailServer;
 import com.iprogrammerr.riddle.security.Encryption;
 import com.iprogrammerr.riddle.user.ToSignUpJsonUser;
@@ -27,7 +27,7 @@ public class SignUpRespondent implements Respondent {
     }
 
     @Override
-    public Response respond(MatchedRequest request) throws Exception {
+    public Response respond(MatchedRequest request) {
 	try {
 	    ValidatableToSignUpUser toSignUpUser = new ToValidateSignUpUser(
 		    new ToSignUpJsonUser(new String(request.body())));
@@ -43,7 +43,7 @@ public class SignUpRespondent implements Respondent {
 	    String userHash = encryption.hash(toSignUpUser.name());
 	    String activatingLink = activatingLinkBase + "?id=" + id + "&activate=" + userHash;
 	    emailServer.sendSigningUp(toSignUpUser.email(), activatingLink);
-	    return new CreatedResponse("Account has been created. Check your email make it active.");
+	    return new CreatedResponse("Account has been created. Check your email to make it active.");
 	} catch (Exception exception) {
 	    exception.printStackTrace();
 	    return new BadRequestResponse(exception.getMessage());

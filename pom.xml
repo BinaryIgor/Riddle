@@ -34,11 +34,6 @@
 			<version>1.6.1</version>
 		</dependency>
 		<dependency>
-			<groupId>com.iprogrammerr</groupId>
-			<artifactId>bright-server</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt</artifactId>
 			<version>0.9.0</version>
@@ -63,6 +58,11 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20180813</version>
+		</dependency>
+		<dependency>
+			<groupId>com.iprogrammerr</groupId>
+			<artifactId>bright-server</artifactId>
+			<version>1.0-beta-1</version>
 		</dependency>
 	</dependencies>
 

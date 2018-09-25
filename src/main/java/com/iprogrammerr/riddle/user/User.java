@@ -17,7 +17,7 @@ public interface User {
 
     String role() throws Exception;
 
-    void update(KeysValues columns) throws Exception;
+    void update(KeysValues field) throws Exception;
 
-    void update(KeyValue column) throws Exception;
+    void update(KeyValue field) throws Exception;
 }

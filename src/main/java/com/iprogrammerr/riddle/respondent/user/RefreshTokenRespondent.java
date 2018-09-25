@@ -4,10 +4,10 @@ import org.json.JSONObject;
 
 import com.iprogrammerr.bright.server.request.MatchedRequest;
 import com.iprogrammerr.bright.server.respondent.Respondent;
-import com.iprogrammerr.bright.server.response.OkResponse;
 import com.iprogrammerr.bright.server.response.Response;
-import com.iprogrammerr.bright.server.response.UnauthorizedResponse;
 import com.iprogrammerr.bright.server.response.body.JsonResponseBody;
+import com.iprogrammerr.bright.server.response.template.OkResponse;
+import com.iprogrammerr.bright.server.response.template.UnauthorizedResponse;
 import com.iprogrammerr.riddle.response.body.NewAccessTokenBody;
 import com.iprogrammerr.riddle.security.token.JsonWebToken;
 import com.iprogrammerr.riddle.security.token.JsonWebTokenDecryption;
@@ -29,7 +29,7 @@ public class RefreshTokenRespondent implements Respondent {
     }
 
     @Override
-    public Response respond(MatchedRequest request) throws Exception {
+    public Response respond(MatchedRequest request) {
 	try {
 	    JSONObject tokenJson = new JSONObject(new String(request.body()));
 	    TokenDecryption decryption = new JsonWebTokenDecryption(tokenJson.getString("value"), refreshTokenTemplate);
