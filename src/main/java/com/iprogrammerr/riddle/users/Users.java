@@ -10,6 +10,8 @@ public interface Users {
 
     User user(String nameOrEmail) throws Exception;
 
+    User user(long id) throws Exception;
+
     boolean exists(String nameOrEmail);
 
     long createPlayer(String name, String email, String password) throws Exception;

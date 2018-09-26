@@ -5,9 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-public class SqlDatabaseSession implements DatabaseSession {
+public final class SqlDatabaseSession implements DatabaseSession {
 
-    private Database database;
+    private final Database database;
 
     public SqlDatabaseSession(Database database) {
 	this.database = database;

@@ -1,6 +1,6 @@
 package com.iprogrammerr.riddle.user;
 
-public class ToValidateSignUpUser implements ValidatableToSignUpUser {
+public final class ToValidateSignUpUser implements ValidatableToSignUpUser {
 
     private final ToSignUpUser base;
 

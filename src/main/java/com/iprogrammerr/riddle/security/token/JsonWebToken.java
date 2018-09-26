@@ -5,10 +5,10 @@ import java.util.Date;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-public class JsonWebToken implements Token {
+public final class JsonWebToken implements Token {
 
-    private TokenTemplate template;
-    private String username;
+    private final TokenTemplate template;
+    private final String username;
     private long validity;
     private String token;
 

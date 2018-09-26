@@ -2,7 +2,7 @@ package com.iprogrammerr.riddle.response.body;
 
 import org.json.JSONObject;
 
-public class UserBody implements JsonBody {
+public final class UserBody implements JsonBody {
 
     private final String name;
     private final String email;

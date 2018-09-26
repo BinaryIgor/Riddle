@@ -6,7 +6,7 @@ import java.util.List;
 import com.iprogrammerr.bright.server.model.KeyValue;
 import com.iprogrammerr.riddle.model.Record;
 
-public class SqlQueryTemplate implements QueryTemplate {
+public final class SqlQueryTemplate implements QueryTemplate {
 
     private final char paramSign;
 

@@ -7,17 +7,17 @@ import com.iprogrammerr.riddle.database.DatabaseRecord;
 import com.iprogrammerr.riddle.database.DatabaseSession;
 import com.iprogrammerr.riddle.database.QueryTemplate;
 import com.iprogrammerr.riddle.model.Record;
-import com.iprogrammerr.riddle.user.DatabaseUser;
 import com.iprogrammerr.riddle.user.User;
+import com.iprogrammerr.riddle.user.database.DatabaseUser;
 
-public class DatabaseUsers implements Users {
+public final class DatabaseUsers implements Users {
 
     private static final String USER_SELECT_QUERY = "select user.*, user_role.name as role from user inner join user_role "
 	    + "on user.user_role_id = user_role.id";
     private static final String USER_EXISTS_QUERY = "select count(1) from user";
-    private DatabaseSession session;
+    private final DatabaseSession session;
     private final UsersRoles usersRoles;
-    private QueryTemplate queryTemplate;
+    private final QueryTemplate queryTemplate;
 
     public DatabaseUsers(DatabaseSession session, UsersRoles usersRoles, QueryTemplate queryTemplate) {
 	this.session = session;
@@ -83,6 +83,12 @@ public class DatabaseUsers implements Users {
 	    exception.printStackTrace();
 	    return false;
 	}
+    }
+
+    @Override
+    public User user(long id) throws Exception {
+	String query = String.format("%s where user.id = %d", USER_SELECT_QUERY, id);
+	return session.select(query, resultSet -> new DatabaseUser(session, queryTemplate, resultSet));
     }
 
 }

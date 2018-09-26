@@ -1,6 +1,6 @@
 package com.iprogrammerr.riddle.email;
 
-public class SignUpEmail implements Email {
+public final class SignUpEmail implements Email {
 
     private final String sender;
     private final String recipent;

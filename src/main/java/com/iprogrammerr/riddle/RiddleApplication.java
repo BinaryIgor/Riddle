@@ -1,6 +1,5 @@
 package com.iprogrammerr.riddle;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -16,15 +15,17 @@ import com.iprogrammerr.bright.server.application.HttpApplication;
 import com.iprogrammerr.bright.server.cors.ConfigurableCors;
 import com.iprogrammerr.bright.server.cors.Cors;
 import com.iprogrammerr.bright.server.filter.ConditionalRequestFilter;
+import com.iprogrammerr.bright.server.filter.HttpRequestFilter;
+import com.iprogrammerr.bright.server.filter.RequestFilter;
 import com.iprogrammerr.bright.server.method.GetMethod;
 import com.iprogrammerr.bright.server.method.PostMethod;
 import com.iprogrammerr.bright.server.method.RequestMethod;
 import com.iprogrammerr.bright.server.protocol.HttpOneProtocol;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
-import com.iprogrammerr.bright.server.respondent.FilesRespondent;
 import com.iprogrammerr.bright.server.respondent.HttpRespondent;
 import com.iprogrammerr.bright.server.response.Response;
+import com.iprogrammerr.bright.server.rule.SingleRequestMethodRule;
 import com.iprogrammerr.riddle.configuration.ApplicationConfiguration;
 import com.iprogrammerr.riddle.database.Database;
 import com.iprogrammerr.riddle.database.DatabaseSession;
@@ -34,6 +35,7 @@ import com.iprogrammerr.riddle.database.SqlDatabaseSession;
 import com.iprogrammerr.riddle.database.SqlQueryTemplate;
 import com.iprogrammerr.riddle.email.EmailServer;
 import com.iprogrammerr.riddle.email.RiddleEmailServer;
+import com.iprogrammerr.riddle.filter.AuthorizationFilter;
 import com.iprogrammerr.riddle.respondent.user.RefreshTokenRespondent;
 import com.iprogrammerr.riddle.respondent.user.SignInRespondent;
 import com.iprogrammerr.riddle.respondent.user.SignUpRespondent;
@@ -94,14 +96,12 @@ public final class RiddleApplication implements Application {
 		new UserActivationRespondent(session, template, encryption));
 	respondents.add(userActivationRespondent);
 	ConditionalRespondent userProfileRespondent = new HttpRespondent("user/profile", get,
-		new UserProfileRespondent(session, template, users, accessTokenTemplate, authorizationHeaderKey));
+		new UserProfileRespondent(users, accessTokenTemplate, authorizationHeaderKey));
 	respondents.add(userProfileRespondent);
 
-	String rootDirectory = System.getProperty("user.dir") + File.separator + "riddle";
-	ConditionalRespondent fileRespondent = new FilesRespondent(rootDirectory);
-	respondents.add(fileRespondent);
-
+	RequestFilter authorizationFilter = new AuthorizationFilter(authorizationHeaderKey, "Bearer");
 	List<ConditionalRequestFilter> filters = new ArrayList<>();
+	filters.add(new HttpRequestFilter("user/profile", new SingleRequestMethodRule(post), authorizationFilter));
 
 	Cors cors = new ConfigurableCors("http://localhost:8080", "*", "GET, POST");
 

@@ -12,12 +12,12 @@ import com.iprogrammerr.riddle.security.Encryption;
 import com.iprogrammerr.riddle.security.token.JsonWebToken;
 import com.iprogrammerr.riddle.security.token.Token;
 import com.iprogrammerr.riddle.security.token.TokenTemplate;
-import com.iprogrammerr.riddle.user.ToSignInJsonUser;
 import com.iprogrammerr.riddle.user.ToSignInUser;
 import com.iprogrammerr.riddle.user.User;
+import com.iprogrammerr.riddle.user.json.ToSignInJsonUser;
 import com.iprogrammerr.riddle.users.Users;
 
-public class SignInRespondent implements Respondent {
+public final class SignInRespondent implements Respondent {
 
     private final Users users;
     private final Encryption encryption;

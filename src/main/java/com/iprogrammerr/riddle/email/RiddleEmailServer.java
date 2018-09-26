@@ -14,11 +14,11 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 //TODO definetely will benefit from optimization and refactoring
-public class RiddleEmailServer implements EmailServer {
+public final class RiddleEmailServer implements EmailServer {
 
-    private String adminEmail;
-    private String adminEmailPassword;
-    private Properties properties;
+    private final String adminEmail;
+    private final String adminEmailPassword;
+    private final Properties properties;
 
     public RiddleEmailServer(String adminEmail, String adminEmailPassword, String smtpHost, int smtpPort) {
 	this.adminEmail = adminEmail;

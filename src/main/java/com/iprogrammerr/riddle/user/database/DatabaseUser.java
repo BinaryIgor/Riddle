@@ -1,4 +1,4 @@
-package com.iprogrammerr.riddle.user;
+package com.iprogrammerr.riddle.user.database;
 
 import java.sql.ResultSet;
 
@@ -8,21 +8,22 @@ import com.iprogrammerr.bright.server.model.StringsObjects;
 import com.iprogrammerr.riddle.database.DatabaseRecord;
 import com.iprogrammerr.riddle.database.DatabaseSession;
 import com.iprogrammerr.riddle.database.QueryTemplate;
+import com.iprogrammerr.riddle.user.User;
 
-public class DatabaseUser implements User {
+public final class DatabaseUser implements User {
 
-    private long id;
-    private DatabaseSession session;
-    private QueryTemplate template;
-    private KeysValues columns;
+    private final long id;
+    private final DatabaseSession session;
+    private final QueryTemplate template;
+    private final KeysValues columns;
 
     public DatabaseUser(DatabaseSession session, QueryTemplate queryTemplate, ResultSet resultSet) throws Exception {
 	this.id = resultSet.getLong("id");
 	this.session = session;
 	this.template = queryTemplate;
-	this.columns = new StringsObjects().add("name", resultSet.getString("name"))
-		.add("email", resultSet.getString("email")).add("password", resultSet.getString("password"))
-		.add("active", resultSet.getBoolean("active")).add("role", resultSet.getString("role"));
+	this.columns = new StringsObjects().put("name", resultSet.getString("name"))
+		.put("email", resultSet.getString("email")).put("password", resultSet.getString("password"))
+		.put("active", resultSet.getBoolean("active")).put("role", resultSet.getString("role"));
     }
 
     public DatabaseUser(long id, DatabaseSession session, QueryTemplate queryTemplate) {
@@ -76,11 +77,11 @@ public class DatabaseUser implements User {
 	String selectAllTemplate = "select user.*, user_role.name as role from user inner join user_role on "
 		+ " user.user_role_id = user_role.id where user.id = ?";
 	session.select(template.query(selectAllTemplate, id), resultSet -> {
-	    columns.add("name", resultSet.getString("name"));
-	    columns.add("email", resultSet.getString("email"));
-	    columns.add("password", resultSet.getString("password"));
-	    columns.add("active", resultSet.getBoolean("active"));
-	    columns.add("role", resultSet.getString("role"));
+	    columns.put("name", resultSet.getString("name"));
+	    columns.put("email", resultSet.getString("email"));
+	    columns.put("password", resultSet.getString("password"));
+	    columns.put("active", resultSet.getBoolean("active"));
+	    columns.put("role", resultSet.getString("role"));
 	    return columns;
 	});
     }

@@ -7,11 +7,11 @@ import org.json.JSONObject;
 
 import com.iprogrammerr.riddle.security.token.Token;
 
-public class SignInBody implements JsonBody {
+public final class SignInBody implements JsonBody {
 
-    private String role;
-    private Token accessToken;
-    private Token refreshToken;
+    private final String role;
+    private final Token accessToken;
+    private final Token refreshToken;
 
     public SignInBody(String role, Token accessToken, Token refreshToken) {
 	this.role = role;

@@ -11,7 +11,7 @@ import com.iprogrammerr.bright.server.model.StringsObjects;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
-public class JsonWebTokenDecryption implements TokenDecryption {
+public final class JsonWebTokenDecryption implements TokenDecryption {
 
     private final String toDecrypt;
     private final TokenTemplate template;
@@ -48,7 +48,7 @@ public class JsonWebTokenDecryption implements TokenDecryption {
 	KeysValues additional = new StringsObjects();
 	if (!toReadValuesKeys.isEmpty()) {
 	    for (String key : toReadValuesKeys) {
-		additional.add(key, claims.get(key));
+		additional.put(key, claims.get(key));
 	    }
 	}
 	return additional;

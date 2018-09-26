@@ -7,7 +7,7 @@ import com.iprogrammerr.bright.server.model.KeysValues;
 import com.iprogrammerr.bright.server.model.StringsObjects;
 import com.iprogrammerr.riddle.model.Record;
 
-public class DatabaseRecord implements Record {
+public final class DatabaseRecord implements Record {
 
     private final String name;
     private final KeysValues columns;
@@ -24,7 +24,7 @@ public class DatabaseRecord implements Record {
 
     @Override
     public Record put(String key, Object value) {
-	columns.add(key, value);
+	columns.put(key, value);
 	return this;
     }
 
@@ -37,5 +37,4 @@ public class DatabaseRecord implements Record {
     public String name() {
 	return name;
     }
-
 }

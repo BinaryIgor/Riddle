@@ -16,7 +16,7 @@ import com.iprogrammerr.riddle.security.token.TokenDecryption;
 import com.iprogrammerr.riddle.security.token.TokenTemplate;
 import com.iprogrammerr.riddle.users.Users;
 
-public class RefreshTokenRespondent implements Respondent {
+public final class RefreshTokenRespondent implements Respondent {
 
     private final Users users;
     private final TokenTemplate accessTokenTemplate;

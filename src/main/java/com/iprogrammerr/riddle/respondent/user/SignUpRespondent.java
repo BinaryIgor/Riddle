@@ -7,12 +7,12 @@ import com.iprogrammerr.bright.server.response.template.BadRequestResponse;
 import com.iprogrammerr.bright.server.response.template.CreatedResponse;
 import com.iprogrammerr.riddle.email.EmailServer;
 import com.iprogrammerr.riddle.security.Encryption;
-import com.iprogrammerr.riddle.user.ToSignUpJsonUser;
 import com.iprogrammerr.riddle.user.ToValidateSignUpUser;
 import com.iprogrammerr.riddle.user.ValidatableToSignUpUser;
+import com.iprogrammerr.riddle.user.json.ToSignUpJsonUser;
 import com.iprogrammerr.riddle.users.Users;
 
-public class SignUpRespondent implements Respondent {
+public final class SignUpRespondent implements Respondent {
 
     private final String activatingLinkBase;
     private final Users users;

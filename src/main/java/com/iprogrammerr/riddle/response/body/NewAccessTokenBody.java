@@ -4,9 +4,9 @@ import org.json.JSONObject;
 
 import com.iprogrammerr.riddle.security.token.Token;
 
-public class NewAccessTokenBody implements JsonBody {
+public final class NewAccessTokenBody implements JsonBody {
 
-    private Token token;
+    private final Token token;
 
     public NewAccessTokenBody(Token token) {
 	this.token = token;

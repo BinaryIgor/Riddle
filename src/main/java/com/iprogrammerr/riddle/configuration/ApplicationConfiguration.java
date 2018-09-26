@@ -2,9 +2,9 @@ package com.iprogrammerr.riddle.configuration;
 
 import java.util.Properties;
 
-public class ApplicationConfiguration {
+public final class ApplicationConfiguration {
 
-    private Properties source;
+    private final Properties source;
 
     public ApplicationConfiguration(Properties source) {
 	this.source = source;

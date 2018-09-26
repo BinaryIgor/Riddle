@@ -4,7 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;
 
-public class ShaEncryption implements Encryption {
+public final class ShaEncryption implements Encryption {
 
     private static final String USER_HASH_EQUALS_REPLACEMENT = "S";
     private final MessageDigest digest;

@@ -13,10 +13,10 @@ import com.iprogrammerr.bright.server.response.template.UnauthorizedResponse;
 import com.iprogrammerr.riddle.database.DatabaseSession;
 import com.iprogrammerr.riddle.database.QueryTemplate;
 import com.iprogrammerr.riddle.security.Encryption;
-import com.iprogrammerr.riddle.user.DatabaseUser;
 import com.iprogrammerr.riddle.user.User;
+import com.iprogrammerr.riddle.user.database.DatabaseUser;
 
-public class UserActivationRespondent implements Respondent {
+public final class UserActivationRespondent implements Respondent {
 
     private final DatabaseSession session;
     private final QueryTemplate template;
@@ -39,7 +39,7 @@ public class UserActivationRespondent implements Respondent {
 	    if (!userHash.equals(hash)) {
 		return new UnauthorizedResponse("Wrong activating hash");
 	    }
-	    user.update(new StringsObjects().add("active", true));
+	    user.update(new StringsObjects().put("active", true));
 	    return new OkResponse(new JsonResponseBody(new JSONObject().put("username", user.name()).toString()));
 	} catch (Exception exception) {
 	    exception.printStackTrace();
