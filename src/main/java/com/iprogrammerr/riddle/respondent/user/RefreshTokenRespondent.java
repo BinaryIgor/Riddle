@@ -32,12 +32,13 @@ public final class RefreshTokenRespondent implements Respondent {
     public Response respond(MatchedRequest request) {
 	try {
 	    JSONObject tokenJson = new JSONObject(new String(request.body()));
-	    TokenDecryption decryption = new JsonWebTokenDecryption(tokenJson.getString("value"), refreshTokenTemplate);
+	    TokenDecryption decryption = new JsonWebTokenDecryption(tokenJson.getString("value"),
+		    this.refreshTokenTemplate);
 	    String username = decryption.subject();
-	    if (!users.exists(username)) {
+	    if (!this.users.exists(username)) {
 		return new UnauthorizedResponse("Given user does not exist");
 	    }
-	    Token acessToken = new JsonWebToken(username, accessTokenTemplate);
+	    Token acessToken = new JsonWebToken(username, this.accessTokenTemplate);
 	    return new OkResponse(new JsonResponseBody(new NewAccessTokenBody(acessToken).content()));
 	} catch (Exception exception) {
 	    exception.printStackTrace();

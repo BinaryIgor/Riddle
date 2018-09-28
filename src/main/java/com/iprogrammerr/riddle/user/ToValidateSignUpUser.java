@@ -10,36 +10,35 @@ public final class ToValidateSignUpUser implements ValidatableToSignUpUser {
 
     @Override
     public String name() throws Exception {
-	return base.name();
+	return this.base.name();
     }
 
     @Override
     public String email() throws Exception {
-	return base.email();
+	return this.base.email();
     }
 
     @Override
     public String password() throws Exception {
-	return base.password();
+	return this.base.password();
     }
 
     @Override
     public void validate() throws Exception {
-	String name = base.name();
+	String name = this.base.name();
 	if (name.length() < 3) {
 	    throw new Exception("Name has to have at least 3 characters!");
 	}
-	String email = base.email();
+	String email = this.base.email();
 	boolean validEmail = email.contains("@") && email.indexOf('.') > 0 && !email.endsWith(".")
 		&& email.length() > 6;
 	if (!validEmail) {
 	    throw new Exception("Email has to have valid syntax and at least 6 characters");
 	}
-	String password = base.password();
+	String password = this.base.password();
 	if (password.length() < 6) {
 	    throw new Exception("Pasword has to have at least 6 characters");
 	}
-
     }
 
 }

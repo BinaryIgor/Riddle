@@ -33,6 +33,7 @@ import com.iprogrammerr.riddle.database.QueryTemplate;
 import com.iprogrammerr.riddle.database.SqlDatabase;
 import com.iprogrammerr.riddle.database.SqlDatabaseSession;
 import com.iprogrammerr.riddle.database.SqlQueryTemplate;
+import com.iprogrammerr.riddle.database.ValidatedQueryDatabaseSession;
 import com.iprogrammerr.riddle.email.EmailServer;
 import com.iprogrammerr.riddle.email.RiddleEmailServer;
 import com.iprogrammerr.riddle.filter.AuthorizationFilter;
@@ -64,7 +65,7 @@ public final class RiddleApplication implements Application {
 
 	Database database = new SqlDatabase(applicationConfiguration.databaseUsername(),
 		applicationConfiguration.databasePassword(), applicationConfiguration.jdbcUrl());
-	DatabaseSession session = new SqlDatabaseSession(database);
+	DatabaseSession session = new ValidatedQueryDatabaseSession(new SqlDatabaseSession(database));
 	QueryTemplate template = new SqlQueryTemplate();
 
 	RequestMethod get = new GetMethod();

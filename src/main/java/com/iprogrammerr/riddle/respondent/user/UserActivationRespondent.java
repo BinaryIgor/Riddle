@@ -2,7 +2,7 @@ package com.iprogrammerr.riddle.respondent.user;
 
 import org.json.JSONObject;
 
-import com.iprogrammerr.bright.server.model.StringsObjects;
+import com.iprogrammerr.bright.server.model.StringObject;
 import com.iprogrammerr.bright.server.request.MatchedRequest;
 import com.iprogrammerr.bright.server.respondent.Respondent;
 import com.iprogrammerr.bright.server.response.Response;
@@ -34,12 +34,12 @@ public final class UserActivationRespondent implements Respondent {
 	    JSONObject jsonObject = new JSONObject(new String(request.body()));
 	    long id = jsonObject.getLong("id");
 	    String hash = jsonObject.getString("hash");
-	    User user = new DatabaseUser(id, session, template);
-	    String userHash = encryption.hash(user.name());
+	    User user = new DatabaseUser(id, this.session, this.template);
+	    String userHash = this.encryption.hash(user.name());
 	    if (!userHash.equals(hash)) {
 		return new UnauthorizedResponse("Wrong activating hash");
 	    }
-	    user.update(new StringsObjects().put("active", true));
+	    user.update(new StringObject("active", true));
 	    return new OkResponse(new JsonResponseBody(new JSONObject().put("username", user.name()).toString()));
 	} catch (Exception exception) {
 	    exception.printStackTrace();

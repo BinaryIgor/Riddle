@@ -13,7 +13,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-//TODO definetely will benefit from optimization and refactoring
 public final class RiddleEmailServer implements EmailServer {
 
     private final String adminEmail;

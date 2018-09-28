@@ -24,17 +24,17 @@ public final class DatabaseRecord implements Record {
 
     @Override
     public Record put(String key, Object value) {
-	columns.put(key, value);
+	this.columns.put(key, value);
 	return this;
     }
 
     @Override
     public List<KeyValue> columns() {
-	return columns.keysValues();
+	return this.columns.keysValues();
     }
 
     @Override
     public String name() {
-	return name;
+	return this.name;
     }
 }

@@ -1,6 +1,6 @@
 package com.iprogrammerr.riddle.security.token;
 
-public class JsonWebTokenTemplate implements TokenTemplate {
+public final class JsonWebTokenTemplate implements TokenTemplate {
 
     private static final byte[] SECRET = "SecRanByt".getBytes();
     private final String type;
@@ -23,12 +23,12 @@ public class JsonWebTokenTemplate implements TokenTemplate {
 
     @Override
     public String type() {
-	return type;
+	return this.type;
     }
 
     @Override
     public long validity() {
-	return validity;
+	return this.validity;
     }
 
 }

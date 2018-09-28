@@ -18,32 +18,32 @@ public final class ToEditJsonUser implements ToEditUser {
 
     @Override
     public String email() throws Exception {
-	return source.getString("email");
+	return this.source.getString("email");
     }
 
     @Override
     public boolean hasEmail() {
-	return !source.optString("email").isEmpty();
+	return !this.source.optString("email").isEmpty();
     }
 
     @Override
     public String name() throws Exception {
-	return source.getString("name");
+	return this.source.getString("name");
     }
 
     @Override
     public boolean hasName() {
-	return !source.optString("name").isEmpty();
+	return !this.source.optString("name").isEmpty();
     }
 
     @Override
     public String password() throws Exception {
-	return source.getString("password");
+	return this.source.getString("password");
     }
 
     @Override
     public boolean hasPassword() {
-	return !source.optString("password").isEmpty();
+	return !this.source.optString("password").isEmpty();
     }
 
 }

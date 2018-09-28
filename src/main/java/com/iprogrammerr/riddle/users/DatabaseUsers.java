@@ -12,8 +12,7 @@ import com.iprogrammerr.riddle.user.database.DatabaseUser;
 
 public final class DatabaseUsers implements Users {
 
-    private static final String USER_SELECT_QUERY = "select user.*, user_role.name as role from user inner join user_role "
-	    + "on user.user_role_id = user_role.id";
+    private static final String USER_SELECT_QUERY = "select user.*, user_role.name as role from user inner join user_role on user.user_role_id = user_role.id";
     private static final String USER_EXISTS_QUERY = "select count(1) from user";
     private final DatabaseSession session;
     private final UsersRoles usersRoles;
@@ -34,7 +33,7 @@ public final class DatabaseUsers implements Users {
     public long createPlayer(String name, String email, String password) throws Exception {
 	Record user = new DatabaseRecord("user").put("name", name).put("email", email).put("password", password)
 		.put("user_role_id", usersRoles.playerId());
-	return session.create(queryTemplate.insert(user));
+	return this.session.create(this.queryTemplate.insert(user));
     }
 
     @Override
@@ -45,10 +44,10 @@ public final class DatabaseUsers implements Users {
 
     private Iterable<User> many(String query) {
 	try {
-	    return session.select(query, resultSet -> {
+	    return this.session.select(query, resultSet -> {
 		List<User> users = new ArrayList<>();
 		do {
-		    users.add(new DatabaseUser(session, queryTemplate, resultSet));
+		    users.add(new DatabaseUser(this.session, this.queryTemplate, resultSet));
 		} while (resultSet.next());
 		return users;
 	    });
@@ -65,7 +64,7 @@ public final class DatabaseUsers implements Users {
 	} else {
 	    query += " where user.name = ?";
 	}
-	return session.select(queryTemplate.query(query, nameOrEmail),
+	return this.session.select(this.queryTemplate.query(query, nameOrEmail),
 		resultSet -> new DatabaseUser(session, queryTemplate, resultSet));
     }
 
@@ -78,7 +77,8 @@ public final class DatabaseUsers implements Users {
 	    query += " where user.name = ?";
 	}
 	try {
-	    return session.select(queryTemplate.query(query, nameOrEmail), resultSet -> resultSet.getLong(1) > 0);
+	    return this.session.select(this.queryTemplate.query(query, nameOrEmail),
+		    resultSet -> resultSet.getLong(1) > 0);
 	} catch (Exception exception) {
 	    exception.printStackTrace();
 	    return false;
@@ -88,7 +88,7 @@ public final class DatabaseUsers implements Users {
     @Override
     public User user(long id) throws Exception {
 	String query = String.format("%s where user.id = %d", USER_SELECT_QUERY, id);
-	return session.select(query, resultSet -> new DatabaseUser(session, queryTemplate, resultSet));
+	return this.session.select(query, resultSet -> new DatabaseUser(this.session, this.queryTemplate, resultSet));
     }
 
 }

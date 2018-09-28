@@ -22,7 +22,7 @@ public final class SqlQueryTemplate implements QueryTemplate {
 	List<Integer> paramsIndexes = new ArrayList<>();
 	char[] templateChars = template.toCharArray();
 	for (int i = 0; i < templateChars.length; i++) {
-	    if (templateChars[i] == paramSign) {
+	    if (templateChars[i] == this.paramSign) {
 		paramsIndexes.add(i);
 	    }
 	}

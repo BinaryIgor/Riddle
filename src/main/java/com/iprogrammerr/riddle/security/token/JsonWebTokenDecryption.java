@@ -18,7 +18,7 @@ public final class JsonWebTokenDecryption implements TokenDecryption {
     private Optional<Claims> claims;
 
     public JsonWebTokenDecryption(String toDecrypt, TokenTemplate template) {
-	this.toDecrypt = toDecrypt.replace("Bearer ", "");
+	this.toDecrypt = toDecrypt;
 	this.template = template;
 	this.claims = Optional.empty();
     }
@@ -26,7 +26,7 @@ public final class JsonWebTokenDecryption implements TokenDecryption {
     @Override
     public String subject() throws Exception {
 	readClaims();
-	String username = claims.get().getSubject();
+	String username = this.claims.get().getSubject();
 	if (username == null || username.isEmpty()) {
 	    throw new Exception("Username is not present");
 	}
@@ -41,7 +41,7 @@ public final class JsonWebTokenDecryption implements TokenDecryption {
 	List<String> toReadValuesKeys = new ArrayList<>();
 	while (claimsKeys.hasNext()) {
 	    String key = claimsKeys.next();
-	    if (!key.equals(template.typeKey())) {
+	    if (!key.equals(this.template.typeKey())) {
 		toReadValuesKeys.add(key);
 	    }
 	}
@@ -55,13 +55,14 @@ public final class JsonWebTokenDecryption implements TokenDecryption {
     }
 
     void readClaims() throws Exception {
-	if (claims.isPresent()) {
+	if (this.claims.isPresent()) {
 	    return;
 
 	}
-	claims = Optional.of(Jwts.parser().setSigningKey(template.secret()).parseClaimsJws(toDecrypt).getBody());
-	String type = claims.get().get(template.typeKey(), String.class);
-	if (type == null || !type.equals(template.type())) {
+	this.claims = Optional.of(Jwts.parser().setSigningKey(this.template.secret())
+		.parseClaimsJws(this.toDecrypt.replaceAll("Bearer ", "")).getBody());
+	String type = this.claims.get().get(this.template.typeKey(), String.class);
+	if (type == null || !type.equals(this.template.type())) {
 	    throw new Exception(String.format("%s is not a refresh token type", type));
 	}
     }

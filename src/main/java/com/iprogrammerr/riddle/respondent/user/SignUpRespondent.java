@@ -32,17 +32,17 @@ public final class SignUpRespondent implements Respondent {
 	    ValidatableToSignUpUser toSignUpUser = new ToValidateSignUpUser(
 		    new ToSignUpJsonUser(new String(request.body())));
 	    toSignUpUser.validate();
-	    if (users.exists(toSignUpUser.name())) {
+	    if (this.users.exists(toSignUpUser.name())) {
 		return new BadRequestResponse(toSignUpUser.name() + " is taken already");
 	    }
-	    if (users.exists(toSignUpUser.email())) {
+	    if (this.users.exists(toSignUpUser.email())) {
 		return new BadRequestResponse(toSignUpUser.email() + " is taken already");
 	    }
-	    String hashedPassword = encryption.hash(toSignUpUser.password());
-	    long id = users.createPlayer(toSignUpUser.name(), toSignUpUser.email(), hashedPassword);
-	    String userHash = encryption.hash(toSignUpUser.name());
-	    String activatingLink = activatingLinkBase + "?id=" + id + "&activate=" + userHash;
-	    emailServer.sendSigningUp(toSignUpUser.email(), activatingLink);
+	    String hashedPassword = this.encryption.hash(toSignUpUser.password());
+	    long id = this.users.createPlayer(toSignUpUser.name(), toSignUpUser.email(), hashedPassword);
+	    String userHash = this.encryption.hash(toSignUpUser.name());
+	    String activatingLink = String.format("%s?id=%d&activate=%s", this.activatingLinkBase, id, userHash);
+	    this.emailServer.sendSigningUp(toSignUpUser.email(), activatingLink);
 	    return new CreatedResponse("Account has been created. Check your email to make it active.");
 	} catch (Exception exception) {
 	    exception.printStackTrace();

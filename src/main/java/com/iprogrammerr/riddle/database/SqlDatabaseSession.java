@@ -15,7 +15,7 @@ public final class SqlDatabaseSession implements DatabaseSession {
 
     @Override
     public <T> T select(String sql, QueryResultMapping<T> mapping) throws Exception {
-	try (Connection connection = database.connect()) {
+	try (Connection connection = this.database.connect()) {
 	    Statement statement = connection.createStatement();
 	    ResultSet resultSet = statement.executeQuery(sql);
 	    resultSet.next();
@@ -25,7 +25,7 @@ public final class SqlDatabaseSession implements DatabaseSession {
 
     @Override
     public long create(String sql) throws Exception {
-	try (Connection connection = database.connect()) {
+	try (Connection connection = this.database.connect()) {
 	    PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 	    preparedStatement.executeUpdate();
 	    ResultSet resultSet = preparedStatement.getGeneratedKeys();
@@ -36,22 +36,17 @@ public final class SqlDatabaseSession implements DatabaseSession {
 
     @Override
     public void update(String sql) throws Exception {
-	modyfing(sql, ExecutionMode.UPDATE);
-    }
-
-    @Override
-    public void delete(String sql) throws Exception {
-	modyfing(sql, ExecutionMode.DELETE);
-    }
-
-    private void modyfing(String sql, ExecutionMode mode) throws Exception {
-	try (Connection connection = database.connect()) {
+	try (Connection connection = this.database.connect()) {
 	    Statement statement = connection.createStatement();
 	    statement.executeUpdate(sql);
 	}
     }
 
-    private enum ExecutionMode {
-	UPDATE, DELETE
+    @Override
+    public void delete(String sql) throws Exception {
+	try (Connection connection = this.database.connect()) {
+	    Statement statement = connection.createStatement();
+	    statement.executeUpdate(sql);
+	}
     }
 }

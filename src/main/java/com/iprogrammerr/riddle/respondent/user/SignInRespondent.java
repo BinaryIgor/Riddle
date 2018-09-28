@@ -37,16 +37,16 @@ public final class SignInRespondent implements Respondent {
     public Response respond(MatchedRequest request) {
 	try {
 	    ToSignInUser toSignInUser = new ToSignInJsonUser(new String(request.body()));
-	    User user = users.user(toSignInUser.nameOrEmail());
-	    String encryptedPassword = encryption.hash(toSignInUser.password());
+	    User user = this.users.user(toSignInUser.nameOrEmail());
+	    String encryptedPassword = this.encryption.hash(toSignInUser.password());
 	    if (!encryptedPassword.equals(user.password())) {
 		return new UnauthenticatedResponse("Invalid password");
 	    }
 	    if (!user.active()) {
 		return new UnauthenticatedResponse("User needs to be activated first");
 	    }
-	    Token accessToken = new JsonWebToken(user.name(), accessTokenTemplate);
-	    Token refreshToken = new JsonWebToken(user.name(), refreshTokenTemplate);
+	    Token accessToken = new JsonWebToken(user.name(), this.accessTokenTemplate);
+	    Token refreshToken = new JsonWebToken(user.name(), this.refreshTokenTemplate);
 	    return new OkResponse(
 		    new JsonResponseBody(new SignInBody(user.role(), accessToken, refreshToken).content()));
 	} catch (Exception exception) {

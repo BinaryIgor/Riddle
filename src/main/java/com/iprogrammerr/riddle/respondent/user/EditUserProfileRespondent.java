@@ -34,7 +34,8 @@ public final class EditUserProfileRespondent implements Respondent {
     public Response respond(MatchedRequest request) {
 	Response response;
 	try {
-	    User user = new FromRequestUserSource(request, users, tokenTemplate, authorizationHeader).collect();
+	    User user = new FromRequestUserSource(request, this.users, this.tokenTemplate, this.authorizationHeader)
+		    .collect();
 	    KeysValues toUpdate = new StringsObjects();
 	    ToEditUser toEditUser = new ToEditJsonUser(new String(request.body()));
 	    if (toEditUser.hasName()) {

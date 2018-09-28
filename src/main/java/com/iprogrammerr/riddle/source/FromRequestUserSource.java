@@ -24,15 +24,16 @@ public final class FromRequestUserSource implements UserSource {
     @Override
     public User collect() throws Exception {
 	User user;
-	if (source.hasPathVariable("id", Long.class)) {
-	    long id = source.pathVariable("id", Long.class);
+	if (this.source.hasPathVariable("id", Long.class)) {
+	    long id = this.source.pathVariable("id", Long.class);
 	    if (id < 1) {
 		throw new Exception("id must be a positive number");
 	    }
-	    user = users.user(id);
+	    user = this.users.user(id);
 	} else {
-	    String name = new JsonWebTokenDecryption(source.header(authorizationHeaderKey), tokenTemplate).subject();
-	    user = users.user(name);
+	    String name = new JsonWebTokenDecryption(this.source.header(this.authorizationHeaderKey),
+		    this.tokenTemplate).subject();
+	    user = this.users.user(name);
 	}
 	return user;
     }

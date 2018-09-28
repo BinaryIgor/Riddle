@@ -18,17 +18,17 @@ public final class ToSignUpJsonUser implements ToSignUpUser {
 
     @Override
     public String name() throws Exception {
-	return source.getString("name");
+	return this.source.getString("name");
     }
 
     @Override
     public String email() throws Exception {
-	return source.getString("email");
+	return this.source.getString("email");
     }
 
     @Override
     public String password() throws Exception {
-	return source.getString("password");
+	return this.source.getString("password");
     }
 
 }

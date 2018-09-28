@@ -2,28 +2,33 @@ package com.iprogrammerr.riddle.database;
 
 import java.sql.Connection;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
-//Is this data source good enough?
 public final class SqlDatabase implements Database {
 
-    private final ComboPooledDataSource dataSource;
+    private final HikariDataSource dataSource;
 
-    public SqlDatabase(String user, String password, String jdbcUrl) {
-	dataSource = new ComboPooledDataSource();
-	dataSource.setJdbcUrl(jdbcUrl);
-	dataSource.setUser(user);
-	dataSource.setPassword(password);
+    public SqlDatabase(String username, String password, String jdbcUrl) {
+	HikariConfig config = new HikariConfig();
+	config.setUsername(username);
+	config.setPassword(password);
+	config.setJdbcUrl(jdbcUrl);
+	this.dataSource = new HikariDataSource(config);
+    }
+
+    public SqlDatabase(HikariDataSource dataSource) {
+	this.dataSource = dataSource;
     }
 
     @Override
     public Connection connect() throws Exception {
-	return dataSource.getConnection();
+	return this.dataSource.getConnection();
     }
 
     @Override
     public void close() {
-	dataSource.close();
+	this.dataSource.close();
     }
 
 }

@@ -28,7 +28,8 @@ public final class UserProfileRespondent implements Respondent {
     public Response respond(MatchedRequest request) {
 	Response response;
 	try {
-	    User user = new FromRequestUserSource(request, users, tokenTemplate, authorizationHeader).collect();
+	    User user = new FromRequestUserSource(request, this.users, this.tokenTemplate, this.authorizationHeader)
+		    .collect();
 	    response = new OkResponse(
 		    new JsonResponseBody(new UserBody(user.name(), user.email(), user.password()).content()));
 	} catch (Exception exception) {

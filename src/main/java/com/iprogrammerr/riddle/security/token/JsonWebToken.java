@@ -21,7 +21,7 @@ public final class JsonWebToken implements Token {
     @Override
     public String value() {
 	if (token.isEmpty()) {
-	    createToken();
+	    create();
 	}
 	return token;
     }
@@ -29,13 +29,13 @@ public final class JsonWebToken implements Token {
     @Override
     public long expirationDate() {
 	if (token.isEmpty()) {
-	    createToken();
+	    create();
 	}
 	return validity;
 
     }
 
-    private void createToken() {
+    private void create() {
 	validity = template.validity() + System.currentTimeMillis();
 	token = Jwts.builder().setSubject(username).claim(template.typeKey(), template.type())
 		.setExpiration(new Date(validity)).signWith(SignatureAlgorithm.HS512, template.secret()).compact();

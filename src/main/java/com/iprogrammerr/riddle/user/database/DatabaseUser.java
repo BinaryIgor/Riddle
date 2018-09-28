@@ -4,10 +4,11 @@ import java.sql.ResultSet;
 
 import com.iprogrammerr.bright.server.model.KeyValue;
 import com.iprogrammerr.bright.server.model.KeysValues;
-import com.iprogrammerr.bright.server.model.StringsObjects;
 import com.iprogrammerr.riddle.database.DatabaseRecord;
 import com.iprogrammerr.riddle.database.DatabaseSession;
 import com.iprogrammerr.riddle.database.QueryTemplate;
+import com.iprogrammerr.riddle.model.TypedColumns;
+import com.iprogrammerr.riddle.model.TypedKeysValues;
 import com.iprogrammerr.riddle.user.User;
 
 public final class DatabaseUser implements User {
@@ -15,99 +16,102 @@ public final class DatabaseUser implements User {
     private final long id;
     private final DatabaseSession session;
     private final QueryTemplate template;
-    private final KeysValues columns;
+    private final TypedKeysValues columns;
 
     public DatabaseUser(DatabaseSession session, QueryTemplate queryTemplate, ResultSet resultSet) throws Exception {
-	this.id = resultSet.getLong("id");
-	this.session = session;
-	this.template = queryTemplate;
-	this.columns = new StringsObjects().put("name", resultSet.getString("name"))
-		.put("email", resultSet.getString("email")).put("password", resultSet.getString("password"))
-		.put("active", resultSet.getBoolean("active")).put("role", resultSet.getString("role"));
+	this(resultSet.getLong("id"), session, queryTemplate,
+		new TypedColumns().put("name", resultSet.getString("name")).put("email", resultSet.getString("email"))
+			.put("password", resultSet.getString("password")).put("active", resultSet.getBoolean("active"))
+			.put("role", resultSet.getString("role")));
     }
 
-    public DatabaseUser(long id, DatabaseSession session, QueryTemplate queryTemplate) {
+    public DatabaseUser(long id, DatabaseSession session, QueryTemplate queryTemplate, TypedKeysValues columns) {
 	this.id = id;
 	this.session = session;
 	this.template = queryTemplate;
-	this.columns = new StringsObjects();
+	this.columns = columns;
+    }
+
+    public DatabaseUser(long id, DatabaseSession session, QueryTemplate queryTemplate) {
+	this(id, session, queryTemplate, new TypedColumns());
     }
 
     @Override
     public String name() throws Exception {
-	if (!columns.has("name", String.class)) {
-	    getAll();
+	if (!this.columns.has("name")) {
+	    allColumns();
 	}
-	return columns.value("name", String.class);
+	return this.columns.stringValue("name");
     }
 
     @Override
     public String email() throws Exception {
-	if (!columns.has("email", String.class)) {
-	    getAll();
+	if (!this.columns.has("email")) {
+	    allColumns();
 	}
-	return columns.value("email", String.class);
+	return this.columns.stringValue("email");
     }
 
     @Override
     public String password() throws Exception {
-	if (!columns.has("password", String.class)) {
-	    getAll();
+	if (!this.columns.has("password")) {
+	    allColumns();
 	}
-	return columns.value("password", String.class);
+	return this.columns.stringValue("password");
     }
 
     @Override
     public boolean active() throws Exception {
-	if (!columns.has("active", Boolean.class)) {
-	    getAll();
+	if (!this.columns.has("active")) {
+	    allColumns();
 	}
-	return columns.value("active", Boolean.class);
+	return this.columns.booleanValue("active");
     }
 
     @Override
     public String role() throws Exception {
-	if (!columns.has("role", String.class)) {
-	    getAll();
+	if (!this.columns.has("role")) {
+	    allColumns();
 	}
-	return columns.value("role", String.class);
+	return this.columns.stringValue("role");
     }
 
-    private void getAll() throws Exception {
+    private void allColumns() throws Exception {
 	String selectAllTemplate = "select user.*, user_role.name as role from user inner join user_role on "
 		+ " user.user_role_id = user_role.id where user.id = ?";
-	session.select(template.query(selectAllTemplate, id), resultSet -> {
-	    columns.put("name", resultSet.getString("name"));
-	    columns.put("email", resultSet.getString("email"));
-	    columns.put("password", resultSet.getString("password"));
-	    columns.put("active", resultSet.getBoolean("active"));
-	    columns.put("role", resultSet.getString("role"));
-	    return columns;
+	this.session.select(this.template.query(selectAllTemplate, this.id), resultSet -> {
+	    this.columns.put("name", resultSet.getString("name"));
+	    this.columns.put("email", resultSet.getString("email"));
+	    this.columns.put("password", resultSet.getString("password"));
+	    this.columns.put("active", resultSet.getBoolean("active"));
+	    this.columns.put("role", resultSet.getString("role"));
+	    return this.columns;
 	});
     }
 
     @Override
     public String toString() {
-	return columns.toString();
+	return this.columns.toString();
     }
 
     @Override
     public long id() {
-	return id;
+	return this.id;
     }
 
     @Override
     public void update(KeysValues columns) throws Exception {
-	String query = template.update(new DatabaseRecord("user", columns), "id = ?", id);
-	session.update(query);
-	getAll();
+	String query = this.template.update(new DatabaseRecord("user", columns), "id = ?", this.id);
+	this.session.update(query);
+	allColumns();
     }
 
     @Override
     public void update(KeyValue column) throws Exception {
-	String query = template.update(new DatabaseRecord("user").put(column.key(), column.value()), "id = ?", id);
-	session.update(query);
-	getAll();
+	String query = this.template.update(new DatabaseRecord("user").put(column.key(), column.value()), "id = ?",
+		this.id);
+	this.session.update(query);
+	allColumns();
     }
 
 }
