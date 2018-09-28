@@ -51,6 +51,11 @@ public class ValidatedQueryDatabaseSessionTest {
     }
 
     @Test(expected = Exception.class)
+    public void truncate() throws Exception {
+	this.session.select("truncate table user", resultSet -> new Object());
+    }
+
+    @Test(expected = Exception.class)
     public void deleteAsterisk() throws Exception {
 	this.session.select("delete * from user", resultSet -> new Object());
     }

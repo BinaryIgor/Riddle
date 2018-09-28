@@ -56,6 +56,8 @@ public final class ValidatedQueryDatabaseSession implements DatabaseSession {
 	    illegalKeyword = "create";
 	} else if (query.contains("drop")) {
 	    illegalKeyword = "drop";
+	} else if (query.contains("truncate")) {
+	    illegalKeyword = "truncate";
 	}
 	return illegalKeyword;
     }
