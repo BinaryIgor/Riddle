@@ -22,7 +22,7 @@ public final class SqlDatabase implements Database {
     }
 
     @Override
-    public Connection connect() throws Exception {
+    public Connection connection() throws Exception {
 	return this.dataSource.getConnection();
     }
 

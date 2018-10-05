@@ -39,7 +39,7 @@ public final class UserActivationRespondent implements Respondent {
 	    if (!userHash.equals(hash)) {
 		return new UnauthorizedResponse("Wrong activating hash");
 	    }
-	    user.update(new StringObject("active", true));
+	    user.change(new StringObject("active", true));
 	    return new OkResponse(new JsonResponseBody(new JSONObject().put("username", user.name()).toString()));
 	} catch (Exception exception) {
 	    exception.printStackTrace();

@@ -54,7 +54,7 @@ public final class JsonWebTokenDecryption implements TokenDecryption {
 	return additional;
     }
 
-    void readClaims() throws Exception {
+    private void readClaims() throws Exception {
 	if (this.claims.isPresent()) {
 	    return;
 
@@ -63,7 +63,7 @@ public final class JsonWebTokenDecryption implements TokenDecryption {
 		.parseClaimsJws(this.toDecrypt.replaceAll("Bearer ", "")).getBody());
 	String type = this.claims.get().get(this.template.typeKey(), String.class);
 	if (type == null || !type.equals(this.template.type())) {
-	    throw new Exception(String.format("%s is not a refresh token type", type));
+	    throw new Exception(String.format("%s is not a %s token type", type, this.template.type()));
 	}
     }
 }

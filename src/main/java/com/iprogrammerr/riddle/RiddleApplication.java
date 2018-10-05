@@ -25,7 +25,7 @@ import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
 import com.iprogrammerr.bright.server.respondent.HttpRespondent;
 import com.iprogrammerr.bright.server.response.Response;
-import com.iprogrammerr.bright.server.rule.SingleRequestMethodRule;
+import com.iprogrammerr.bright.server.rule.ListOfRequestMethodRule;
 import com.iprogrammerr.riddle.configuration.ApplicationConfiguration;
 import com.iprogrammerr.riddle.database.Database;
 import com.iprogrammerr.riddle.database.DatabaseSession;
@@ -37,6 +37,7 @@ import com.iprogrammerr.riddle.database.ValidatedQueryDatabaseSession;
 import com.iprogrammerr.riddle.email.EmailServer;
 import com.iprogrammerr.riddle.email.RiddleEmailServer;
 import com.iprogrammerr.riddle.filter.AuthorizationFilter;
+import com.iprogrammerr.riddle.respondent.user.EditUserProfileRespondent;
 import com.iprogrammerr.riddle.respondent.user.RefreshTokenRespondent;
 import com.iprogrammerr.riddle.respondent.user.SignInRespondent;
 import com.iprogrammerr.riddle.respondent.user.SignUpRespondent;
@@ -71,7 +72,7 @@ public final class RiddleApplication implements Application {
 	RequestMethod get = new GetMethod();
 	RequestMethod post = new PostMethod();
 
-	TokenTemplate accessTokenTemplate = new JsonWebTokenTemplate("access_token", 3_600_000L);
+	TokenTemplate accessTokenTemplate = new JsonWebTokenTemplate("access_token", 10_000L);
 	TokenTemplate refreshTokenTemplate = new JsonWebTokenTemplate("refresh_token", 604_800_000L);
 
 	EmailServer emailServer = new RiddleEmailServer(applicationConfiguration.adminEmail(),
@@ -84,25 +85,22 @@ public final class RiddleApplication implements Application {
 	String authorizationHeaderKey = "Authorization";
 
 	List<ConditionalRespondent> respondents = new ArrayList<>();
-	ConditionalRespondent signInRespondent = new HttpRespondent("user/sign-in", post,
-		new SignInRespondent(users, encryption, accessTokenTemplate, refreshTokenTemplate));
-	respondents.add(signInRespondent);
-	ConditionalRespondent singUpRespondent = new HttpRespondent("user/sign-up", post, new SignUpRespondent(
-		applicationConfiguration.userActivationLinkBase(), users, emailServer, encryption));
-	respondents.add(singUpRespondent);
-	ConditionalRespondent refreshTokenRespondent = new HttpRespondent("user/token-refresh", post,
-		new RefreshTokenRespondent(users, accessTokenTemplate, refreshTokenTemplate));
-	respondents.add(refreshTokenRespondent);
-	ConditionalRespondent userActivationRespondent = new HttpRespondent("user/activate", post,
-		new UserActivationRespondent(session, template, encryption));
-	respondents.add(userActivationRespondent);
-	ConditionalRespondent userProfileRespondent = new HttpRespondent("user/profile", get,
-		new UserProfileRespondent(users, accessTokenTemplate, authorizationHeaderKey));
-	respondents.add(userProfileRespondent);
+	respondents.add(new HttpRespondent("user/sign-in", post,
+		new SignInRespondent(users, encryption, accessTokenTemplate, refreshTokenTemplate)));
+	respondents.add(new HttpRespondent("user/sign-up", post, new SignUpRespondent(
+		applicationConfiguration.userActivationLinkBase(), users, emailServer, encryption)));
+	respondents.add(new HttpRespondent("user/token-refresh", post,
+		new RefreshTokenRespondent(users, accessTokenTemplate, refreshTokenTemplate)));
+	respondents.add(
+		new HttpRespondent("user/activate", post, new UserActivationRespondent(session, template, encryption)));
+	respondents.add(new HttpRespondent("user/profile", get,
+		new UserProfileRespondent(users, accessTokenTemplate, authorizationHeaderKey)));
+	respondents.add(new HttpRespondent("user/profile", post, new EditUserProfileRespondent(users,
+		accessTokenTemplate, refreshTokenTemplate, authorizationHeaderKey, encryption)));
 
 	RequestFilter authorizationFilter = new AuthorizationFilter(authorizationHeaderKey, "Bearer");
 	List<ConditionalRequestFilter> filters = new ArrayList<>();
-	filters.add(new HttpRequestFilter("user/profile", new SingleRequestMethodRule(post), authorizationFilter));
+	filters.add(new HttpRequestFilter("user/profile", new ListOfRequestMethodRule(get, post), authorizationFilter));
 
 	Cors cors = new ConfigurableCors("http://localhost:8080", "*", "GET, POST");
 

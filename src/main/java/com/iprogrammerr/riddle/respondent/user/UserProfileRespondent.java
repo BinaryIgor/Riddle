@@ -29,7 +29,7 @@ public final class UserProfileRespondent implements Respondent {
 	Response response;
 	try {
 	    User user = new FromRequestUserSource(request, this.users, this.tokenTemplate, this.authorizationHeader)
-		    .collect();
+		    .user();
 	    response = new OkResponse(
 		    new JsonResponseBody(new UserBody(user.name(), user.email(), user.password()).content()));
 	} catch (Exception exception) {

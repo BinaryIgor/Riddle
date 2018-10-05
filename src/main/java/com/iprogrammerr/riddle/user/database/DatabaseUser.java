@@ -100,14 +100,14 @@ public final class DatabaseUser implements User {
     }
 
     @Override
-    public void update(KeysValues columns) throws Exception {
+    public void change(KeysValues columns) throws Exception {
 	String query = this.template.update(new DatabaseRecord("user", columns), "id = ?", this.id);
 	this.session.update(query);
 	allColumns();
     }
 
     @Override
-    public void update(KeyValue column) throws Exception {
+    public void change(KeyValue column) throws Exception {
 	String query = this.template.update(new DatabaseRecord("user").put(column.key(), column.value()), "id = ?",
 		this.id);
 	this.session.update(query);

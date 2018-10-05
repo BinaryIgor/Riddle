@@ -18,23 +18,22 @@ public final class AuthorizationFilter implements RequestFilter {
 
     @Override
     public Response filter(Request request) {
-	boolean forbidden = !request.hasHeader(headerKey) || !validHeader(request);
-	return forbidden ? new ForbiddenResponse("Authorization with Bearer prefix is required") : new OkResponse();
-    }
-
-    private boolean validHeader(Request request) {
-	boolean valid;
-	try {
-	    String authorizationValue = request.header(headerKey);
-	    if (authorizationValue.startsWith(headerValuePrefix)) {
-		valid = true;
-	    } else {
-		valid = false;
+	boolean forbidden;
+	if (request.hasHeader(headerKey)) {
+	    try {
+		String authorizationValue = request.header(headerKey);
+		if (authorizationValue.startsWith(headerValuePrefix)) {
+		    forbidden = false;
+		} else {
+		    forbidden = true;
+		}
+	    } catch (Exception excetpion) {
+		forbidden = true;
 	    }
-	} catch (Exception excetpion) {
-	    valid = false;
+	} else {
+	    forbidden = true;
 	}
-	return valid;
+	return forbidden ? new ForbiddenResponse("Authorization with Bearer prefix is required") : new OkResponse();
     }
 
 }

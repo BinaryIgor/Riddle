@@ -4,7 +4,7 @@ import java.sql.Connection;
 
 public interface Database {
 
-    Connection connect() throws Exception;
+    Connection connection() throws Exception;
 
     void close();
 }

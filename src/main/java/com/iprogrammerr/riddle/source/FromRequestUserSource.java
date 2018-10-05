@@ -22,7 +22,7 @@ public final class FromRequestUserSource implements UserSource {
     }
 
     @Override
-    public User collect() throws Exception {
+    public User user() throws Exception {
 	User user;
 	if (this.source.hasPathVariable("id", Long.class)) {
 	    long id = this.source.pathVariable("id", Long.class);
