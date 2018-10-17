@@ -34,7 +34,7 @@ public final class SignInRespondent implements Respondent {
     }
 
     @Override
-    public Response respond(MatchedRequest request) {
+    public Response response(MatchedRequest request) {
 	try {
 	    ToSignInUser toSignInUser = new ToSignInJsonUser(new String(request.body()));
 	    User user = this.users.user(toSignInUser.nameOrEmail());

@@ -27,7 +27,7 @@ public final class SignUpRespondent implements Respondent {
     }
 
     @Override
-    public Response respond(MatchedRequest request) {
+    public Response response(MatchedRequest request) {
 	try {
 	    ValidatableToSignUpUser toSignUpUser = new ToValidateSignUpUser(
 		    new ToSignUpJsonUser(new String(request.body())));

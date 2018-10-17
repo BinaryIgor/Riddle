@@ -10,7 +10,9 @@ public interface ToEditUser {
 
     boolean hasName();
 
-    String password() throws Exception;
+    String oldPassword() throws Exception;
 
-    boolean hasPassword();
+    String newPassword() throws Exception;
+
+    boolean hasPasswords();
 }

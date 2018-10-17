@@ -1,7 +1,7 @@
 package com.iprogrammerr.riddle.user;
 
-import com.iprogrammerr.bright.server.model.KeyValue;
-import com.iprogrammerr.bright.server.model.KeysValues;
+import com.iprogrammerr.riddle.model.KeyValue;
+import com.iprogrammerr.riddle.model.TypedMap;
 
 public interface User {
 
@@ -17,7 +17,7 @@ public interface User {
 
     String role() throws Exception;
 
-    void change(KeysValues keyValues) throws Exception;
+    void change(KeyValue column) throws Exception;
 
-    void change(KeyValue keyValue) throws Exception;
+    void change(TypedMap columns) throws Exception;
 }

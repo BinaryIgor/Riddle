@@ -8,8 +8,8 @@ import com.iprogrammerr.bright.server.response.template.BadRequestResponse;
 import com.iprogrammerr.bright.server.response.template.OkResponse;
 import com.iprogrammerr.riddle.response.body.UserBody;
 import com.iprogrammerr.riddle.security.token.TokenTemplate;
-import com.iprogrammerr.riddle.source.FromRequestUserSource;
 import com.iprogrammerr.riddle.user.User;
+import com.iprogrammerr.riddle.user.request.RequestUser;
 import com.iprogrammerr.riddle.users.Users;
 
 public final class UserProfileRespondent implements Respondent {
@@ -25,11 +25,10 @@ public final class UserProfileRespondent implements Respondent {
     }
 
     @Override
-    public Response respond(MatchedRequest request) {
+    public Response response(MatchedRequest request) {
 	Response response;
 	try {
-	    User user = new FromRequestUserSource(request, this.users, this.tokenTemplate, this.authorizationHeader)
-		    .user();
+	    User user = new RequestUser(request, this.users, this.tokenTemplate, this.authorizationHeader).user();
 	    response = new OkResponse(
 		    new JsonResponseBody(new UserBody(user.name(), user.email(), user.password()).content()));
 	} catch (Exception exception) {

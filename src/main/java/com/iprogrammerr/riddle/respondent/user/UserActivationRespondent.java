@@ -2,7 +2,6 @@ package com.iprogrammerr.riddle.respondent.user;
 
 import org.json.JSONObject;
 
-import com.iprogrammerr.bright.server.model.StringObject;
 import com.iprogrammerr.bright.server.request.MatchedRequest;
 import com.iprogrammerr.bright.server.respondent.Respondent;
 import com.iprogrammerr.bright.server.response.Response;
@@ -12,6 +11,7 @@ import com.iprogrammerr.bright.server.response.template.OkResponse;
 import com.iprogrammerr.bright.server.response.template.UnauthorizedResponse;
 import com.iprogrammerr.riddle.database.DatabaseSession;
 import com.iprogrammerr.riddle.database.QueryTemplate;
+import com.iprogrammerr.riddle.model.StringObject;
 import com.iprogrammerr.riddle.security.Encryption;
 import com.iprogrammerr.riddle.user.User;
 import com.iprogrammerr.riddle.user.database.DatabaseUser;
@@ -29,7 +29,7 @@ public final class UserActivationRespondent implements Respondent {
     }
 
     @Override
-    public Response respond(MatchedRequest request) {
+    public Response response(MatchedRequest request) {
 	try {
 	    JSONObject jsonObject = new JSONObject(new String(request.body()));
 	    long id = jsonObject.getLong("id");

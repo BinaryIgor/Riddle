@@ -58,7 +58,12 @@
 		<dependency>
 			<groupId>com.iprogrammerr</groupId>
 			<artifactId>bright-server</artifactId>
-			<version>1.0-beta-1</version>
+			<version>1.0-beta-3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.iprogrammerr</groupId>
+			<artifactId>multipart</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

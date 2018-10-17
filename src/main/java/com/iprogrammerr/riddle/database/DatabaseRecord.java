@@ -2,22 +2,21 @@ package com.iprogrammerr.riddle.database;
 
 import java.util.List;
 
-import com.iprogrammerr.bright.server.model.KeyValue;
-import com.iprogrammerr.bright.server.model.KeysValues;
-import com.iprogrammerr.bright.server.model.StringsObjects;
+import com.iprogrammerr.riddle.model.Columns;
+import com.iprogrammerr.riddle.model.KeyValue;
 import com.iprogrammerr.riddle.model.Record;
+import com.iprogrammerr.riddle.model.TypedMap;
 
 public final class DatabaseRecord implements Record {
 
     private final String name;
-    private final KeysValues columns;
+    private final TypedMap columns;
 
     public DatabaseRecord(String name) {
-	this.name = name;
-	this.columns = new StringsObjects();
+	this(name, new Columns());
     }
 
-    public DatabaseRecord(String name, KeysValues columns) {
+    public DatabaseRecord(String name, TypedMap columns) {
 	this.name = name;
 	this.columns = columns;
     }
@@ -30,7 +29,7 @@ public final class DatabaseRecord implements Record {
 
     @Override
     public List<KeyValue> columns() {
-	return this.columns.keysValues();
+	return this.columns.keyValues();
     }
 
     @Override

@@ -37,13 +37,18 @@ public final class ToEditJsonUser implements ToEditUser {
     }
 
     @Override
-    public String password() throws Exception {
-	return this.source.getString("password");
+    public boolean hasPasswords() {
+	return !this.source.optString("oldPassword").isEmpty() && !this.source.optString("newPassword").isEmpty();
     }
 
     @Override
-    public boolean hasPassword() {
-	return !this.source.optString("password").isEmpty();
+    public String oldPassword() throws Exception {
+	return this.source.getString("oldPassword");
+    }
+
+    @Override
+    public String newPassword() throws Exception {
+	return this.source.getString("newPassword");
     }
 
 }

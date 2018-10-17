@@ -29,7 +29,7 @@ public final class RefreshTokenRespondent implements Respondent {
     }
 
     @Override
-    public Response respond(MatchedRequest request) {
+    public Response response(MatchedRequest request) {
 	try {
 	    JSONObject tokenJson = new JSONObject(new String(request.body()));
 	    TokenDecryption decryption = new JsonWebTokenDecryption(tokenJson.getString("value"),

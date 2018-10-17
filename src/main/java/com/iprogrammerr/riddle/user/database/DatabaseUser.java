@@ -2,13 +2,12 @@ package com.iprogrammerr.riddle.user.database;
 
 import java.sql.ResultSet;
 
-import com.iprogrammerr.bright.server.model.KeyValue;
-import com.iprogrammerr.bright.server.model.KeysValues;
 import com.iprogrammerr.riddle.database.DatabaseRecord;
 import com.iprogrammerr.riddle.database.DatabaseSession;
 import com.iprogrammerr.riddle.database.QueryTemplate;
-import com.iprogrammerr.riddle.model.TypedColumns;
-import com.iprogrammerr.riddle.model.TypedKeysValues;
+import com.iprogrammerr.riddle.model.Columns;
+import com.iprogrammerr.riddle.model.KeyValue;
+import com.iprogrammerr.riddle.model.TypedMap;
 import com.iprogrammerr.riddle.user.User;
 
 public final class DatabaseUser implements User {
@@ -16,16 +15,16 @@ public final class DatabaseUser implements User {
     private final long id;
     private final DatabaseSession session;
     private final QueryTemplate template;
-    private final TypedKeysValues columns;
+    private final TypedMap columns;
 
     public DatabaseUser(DatabaseSession session, QueryTemplate queryTemplate, ResultSet resultSet) throws Exception {
 	this(resultSet.getLong("id"), session, queryTemplate,
-		new TypedColumns().put("name", resultSet.getString("name")).put("email", resultSet.getString("email"))
+		new Columns().put("name", resultSet.getString("name")).put("email", resultSet.getString("email"))
 			.put("password", resultSet.getString("password")).put("active", resultSet.getBoolean("active"))
 			.put("role", resultSet.getString("role")));
     }
 
-    public DatabaseUser(long id, DatabaseSession session, QueryTemplate queryTemplate, TypedKeysValues columns) {
+    public DatabaseUser(long id, DatabaseSession session, QueryTemplate queryTemplate, TypedMap columns) {
 	this.id = id;
 	this.session = session;
 	this.template = queryTemplate;
@@ -33,7 +32,7 @@ public final class DatabaseUser implements User {
     }
 
     public DatabaseUser(long id, DatabaseSession session, QueryTemplate queryTemplate) {
-	this(id, session, queryTemplate, new TypedColumns());
+	this(id, session, queryTemplate, new Columns());
     }
 
     @Override
@@ -100,15 +99,15 @@ public final class DatabaseUser implements User {
     }
 
     @Override
-    public void change(KeysValues columns) throws Exception {
-	String query = this.template.update(new DatabaseRecord("user", columns), "id = ?", this.id);
+    public void change(TypedMap columns) throws Exception {
+	String query = this.template.updateQuery(new DatabaseRecord("user", columns), "id = ?", this.id);
 	this.session.update(query);
 	allColumns();
     }
 
     @Override
     public void change(KeyValue column) throws Exception {
-	String query = this.template.update(new DatabaseRecord("user").put(column.key(), column.value()), "id = ?",
+	String query = this.template.updateQuery(new DatabaseRecord("user").put(column.key(), column.value()), "id = ?",
 		this.id);
 	this.session.update(query);
 	allColumns();

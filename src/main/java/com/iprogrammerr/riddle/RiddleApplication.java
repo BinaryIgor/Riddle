@@ -7,25 +7,26 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-import com.iprogrammerr.bright.server.Connector;
-import com.iprogrammerr.bright.server.RequestResponseConnector;
+import com.iprogrammerr.bright.server.Connection;
+import com.iprogrammerr.bright.server.RequestResponseConnection;
 import com.iprogrammerr.bright.server.Server;
 import com.iprogrammerr.bright.server.application.Application;
 import com.iprogrammerr.bright.server.application.HttpApplication;
 import com.iprogrammerr.bright.server.cors.ConfigurableCors;
 import com.iprogrammerr.bright.server.cors.Cors;
-import com.iprogrammerr.bright.server.filter.ConditionalRequestFilter;
-import com.iprogrammerr.bright.server.filter.HttpRequestFilter;
-import com.iprogrammerr.bright.server.filter.RequestFilter;
+import com.iprogrammerr.bright.server.filter.ConditionalFilter;
+import com.iprogrammerr.bright.server.filter.Filter;
+import com.iprogrammerr.bright.server.filter.PotentialFilter;
 import com.iprogrammerr.bright.server.method.GetMethod;
 import com.iprogrammerr.bright.server.method.PostMethod;
 import com.iprogrammerr.bright.server.method.RequestMethod;
 import com.iprogrammerr.bright.server.protocol.HttpOneProtocol;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
-import com.iprogrammerr.bright.server.respondent.HttpRespondent;
+import com.iprogrammerr.bright.server.respondent.PotentialRespondent;
 import com.iprogrammerr.bright.server.response.Response;
-import com.iprogrammerr.bright.server.rule.ListOfRequestMethodRule;
+import com.iprogrammerr.bright.server.rule.filter.ToFilterRequestRule;
+import com.iprogrammerr.bright.server.rule.method.ListOfRequestMethodRule;
 import com.iprogrammerr.riddle.configuration.ApplicationConfiguration;
 import com.iprogrammerr.riddle.database.Database;
 import com.iprogrammerr.riddle.database.DatabaseSession;
@@ -72,8 +73,8 @@ public final class RiddleApplication implements Application {
 	RequestMethod get = new GetMethod();
 	RequestMethod post = new PostMethod();
 
-	TokenTemplate accessTokenTemplate = new JsonWebTokenTemplate("access_token", 10_000L);
-	TokenTemplate refreshTokenTemplate = new JsonWebTokenTemplate("refresh_token", 604_800_000L);
+	TokenTemplate accessTokenTemplate = new JsonWebTokenTemplate("access_token", 3_600_000L);
+	TokenTemplate refreshTokenTemplate = new JsonWebTokenTemplate("refresh_token", 86_400_000L);
 
 	EmailServer emailServer = new RiddleEmailServer(applicationConfiguration.adminEmail(),
 		applicationConfiguration.adminEmailPassword(), applicationConfiguration.smtpHost(),
@@ -82,33 +83,34 @@ public final class RiddleApplication implements Application {
 	Users users = new DatabaseUsers(session, usersRoles, template);
 	Encryption encryption = new ShaEncryption();
 
-	String authorizationHeaderKey = "Authorization";
+	String authorization = "Authorization";
 
 	List<ConditionalRespondent> respondents = new ArrayList<>();
-	respondents.add(new HttpRespondent("user/sign-in", post,
+	respondents.add(new PotentialRespondent("user/sign-in", post,
 		new SignInRespondent(users, encryption, accessTokenTemplate, refreshTokenTemplate)));
-	respondents.add(new HttpRespondent("user/sign-up", post, new SignUpRespondent(
+	respondents.add(new PotentialRespondent("user/sign-up", post, new SignUpRespondent(
 		applicationConfiguration.userActivationLinkBase(), users, emailServer, encryption)));
-	respondents.add(new HttpRespondent("user/token-refresh", post,
+	respondents.add(new PotentialRespondent("user/token-refresh", post,
 		new RefreshTokenRespondent(users, accessTokenTemplate, refreshTokenTemplate)));
-	respondents.add(
-		new HttpRespondent("user/activate", post, new UserActivationRespondent(session, template, encryption)));
-	respondents.add(new HttpRespondent("user/profile", get,
-		new UserProfileRespondent(users, accessTokenTemplate, authorizationHeaderKey)));
-	respondents.add(new HttpRespondent("user/profile", post, new EditUserProfileRespondent(users,
-		accessTokenTemplate, refreshTokenTemplate, authorizationHeaderKey, encryption)));
+	respondents.add(new PotentialRespondent("user/activate", post,
+		new UserActivationRespondent(session, template, encryption)));
+	respondents.add(new PotentialRespondent("user/profile", get,
+		new UserProfileRespondent(users, accessTokenTemplate, authorization)));
+	respondents.add(new PotentialRespondent("user/profile", post, new EditUserProfileRespondent(users,
+		accessTokenTemplate, refreshTokenTemplate, authorization, encryption)));
 
-	RequestFilter authorizationFilter = new AuthorizationFilter(authorizationHeaderKey, "Bearer");
-	List<ConditionalRequestFilter> filters = new ArrayList<>();
-	filters.add(new HttpRequestFilter("user/profile", new ListOfRequestMethodRule(get, post), authorizationFilter));
+	Filter authorizationFilter = new AuthorizationFilter(authorization, "Bearer");
+	List<ConditionalFilter> filters = new ArrayList<>();
+	filters.add(new PotentialFilter(authorizationFilter,
+		new ToFilterRequestRule(new ListOfRequestMethodRule(get, post), "user/profile")));
 
 	Cors cors = new ConfigurableCors("http://localhost:8080", "*", "GET, POST");
 
 	RiddleApplication application = new RiddleApplication(
 		new HttpApplication("riddle", cors, respondents, filters));
 
-	Connector connector = new RequestResponseConnector(new HttpOneProtocol(), application);
-	Server server = new Server(8000, connector);
+	Connection connection = new RequestResponseConnection(new HttpOneProtocol(), application);
+	Server server = new Server(8000, connection);
 	Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 	    database.close();
 	    server.stop();
@@ -129,8 +131,8 @@ public final class RiddleApplication implements Application {
     }
 
     @Override
-    public Optional<Response> respond(Request request) {
-	return application.respond(request);
+    public Optional<Response> response(Request request) {
+	return this.application.response(request);
     }
 
 }

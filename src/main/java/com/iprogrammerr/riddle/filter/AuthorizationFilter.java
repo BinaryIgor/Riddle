@@ -1,12 +1,12 @@
 package com.iprogrammerr.riddle.filter;
 
-import com.iprogrammerr.bright.server.filter.RequestFilter;
+import com.iprogrammerr.bright.server.filter.Filter;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.Response;
 import com.iprogrammerr.bright.server.response.template.ForbiddenResponse;
 import com.iprogrammerr.bright.server.response.template.OkResponse;
 
-public final class AuthorizationFilter implements RequestFilter {
+public final class AuthorizationFilter implements Filter {
 
     private final String headerKey;
     private final String headerValuePrefix;
@@ -17,7 +17,7 @@ public final class AuthorizationFilter implements RequestFilter {
     }
 
     @Override
-    public Response filter(Request request) {
+    public Response response(Request request) {
 	boolean forbidden;
 	if (request.hasHeader(headerKey)) {
 	    try {

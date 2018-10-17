@@ -3,7 +3,7 @@ package com.iprogrammerr.riddle.database;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.iprogrammerr.bright.server.model.KeyValue;
+import com.iprogrammerr.riddle.model.KeyValue;
 import com.iprogrammerr.riddle.model.Record;
 
 public final class SqlQueryTemplate implements QueryTemplate {
@@ -53,7 +53,7 @@ public final class SqlQueryTemplate implements QueryTemplate {
     }
 
     @Override
-    public String insert(Record table) throws Exception {
+    public String insertQuery(Record table) throws Exception {
 	StringBuilder builder = new StringBuilder();
 	builder.append("insert into ").append(table.name()).append(" (");
 	List<KeyValue> columns = table.columns();
@@ -76,7 +76,7 @@ public final class SqlQueryTemplate implements QueryTemplate {
     }
 
     @Override
-    public String update(Record table, String whereTemplate, Object... values) throws Exception {
+    public String updateQuery(Record table, String whereTemplate, Object... values) throws Exception {
 	StringBuilder builder = new StringBuilder();
 	builder.append("update ").append(table.name()).append(" set ");
 	List<KeyValue> columns = table.columns();

@@ -33,7 +33,7 @@ public final class DatabaseUsers implements Users {
     public long createPlayer(String name, String email, String password) throws Exception {
 	Record user = new DatabaseRecord("user").put("name", name).put("email", email).put("password", password)
 		.put("user_role_id", usersRoles.playerId());
-	return this.session.create(this.queryTemplate.insert(user));
+	return this.session.create(this.queryTemplate.insertQuery(user));
     }
 
     @Override
